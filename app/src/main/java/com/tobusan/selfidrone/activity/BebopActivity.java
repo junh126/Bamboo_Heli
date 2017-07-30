@@ -15,8 +15,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parrot.arsdk.arcommands.ARCOMMANDS_ARDRONE3_MEDIARECORDEVENT_PICTUREEVENTCHANGED_ERROR_ENUM;
@@ -57,6 +55,7 @@ public class BebopActivity extends AppCompatActivity {
     private ByteBuffer mPpsBuffer;
     private int mNbMaxDownload;
     private int mCurrentDownloadIndex;
+    private boolean isFollowed = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,16 +106,6 @@ public class BebopActivity extends AppCompatActivity {
         }
     }
     @Override
-    public void onResume(){
-        super.onResume();
-        mCVClassifierView.resume(mVideoView, mImageView);
-    }
-    @Override
-    public void onPause(){
-        super.onPause();
-        mCVClassifierView.pause();
-    }
-    @Override
     public void onDestroy()
     {
         mBebopDrone.dispose();
@@ -143,7 +132,12 @@ public class BebopActivity extends AppCompatActivity {
             public void onClick(View v){
                 Context wrapper = new ContextThemeWrapper(getApplicationContext(), R.style.MyPopupMenu);
                 PopupMenu popup = new PopupMenu(wrapper, v);
-                getMenuInflater().inflate(R.menu.popup, popup.getMenu());
+
+                if(isFollowed){
+                    getMenuInflater().inflate(R.menu.popup_unfollow, popup.getMenu());
+                }else{
+                    getMenuInflater().inflate(R.menu.popup_follow, popup.getMenu());
+                }
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
@@ -158,13 +152,16 @@ public class BebopActivity extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(),
                                         "popUpEvent - "
                                                 + item.getTitle(),
-                                       Toast.LENGTH_SHORT).show();
+                                        Toast.LENGTH_SHORT).show();
                                 break;
                             case R.id.FollowMe:
-                                Toast.makeText(getApplicationContext(),
-                                        "popUpEvent - "
-                                                + item.getTitle(),
-                                        Toast.LENGTH_SHORT).show();
+                                if(isFollowed){
+                                    isFollowed = false;
+                                    mCVClassifierView.pause();
+                                }else{
+                                    isFollowed = true;
+                                    mCVClassifierView.resume(mVideoView, mImageView);
+                                }
                                 break;
                         }
                         return false;
