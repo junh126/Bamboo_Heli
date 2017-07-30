@@ -1,9 +1,5 @@
 package com.tobusan.selfidrone.discovery;
 
-/**
- * Created by heeju on 2017-07-23.
- */
-
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;

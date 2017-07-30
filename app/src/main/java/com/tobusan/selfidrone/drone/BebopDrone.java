@@ -1,9 +1,5 @@
 package com.tobusan.selfidrone.drone;
 
-/**
- * Created by heeju on 2017-07-23.
- */
-
 import android.content.Context;
 import android.os.Handler;
 import android.support.annotation.NonNull;

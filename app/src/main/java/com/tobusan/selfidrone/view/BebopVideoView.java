@@ -1,9 +1,5 @@
 package com.tobusan.selfidrone.view;
 
-/**
- * Created by heeju on 2017-07-23.
- */
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
