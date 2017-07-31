@@ -76,6 +76,7 @@ public class CVClassifierView extends View {
     private float top_y = 0;
 
     private boolean isFirst = true;
+
     public CVClassifierView(Context context) {
         super(context);
         ctx = context;
@@ -212,6 +213,7 @@ public class CVClassifierView extends View {
 
         public void interrupt() {
             interrupted = true;
+            isFirst = true;
             facesArray = null;
             invalidate();
         }
@@ -246,7 +248,7 @@ public class CVClassifierView extends View {
                     FaceDetect(mat);
                     FaceTrack(mat);
 
-                    rect = new Rect((int)top_x,(int)top_y,(int)rateX,(int)rateY);
+                    rect = new Rect((int)top_x, (int)top_y, (int)rateX, (int)rateY);
 
                     submat = mat.submat(rect);
                     submat.assignTo(sub_submat);
