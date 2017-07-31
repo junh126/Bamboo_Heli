@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -42,13 +43,9 @@ import com.tobusan.selfidrone.R;
 
 public class CVClassifierView extends View {
     private final static String CLASS_NAME = CVClassifierView.class.getSimpleName();
-    //getName()인 경우엔 sdksample.parrot.cse.bebopdrone.view.CVClassifierView가 return
-    //getSimpleName()인 경우엔 CVClassifierView가 return
+
     private final Context ctx;
-    //즉, Context  는 크게 두 가지 역할을 수행하는 Abstract 클래스 입니다.
-    //어플리케이션에 관하여 시스템이 관리하고 있는 정보에 접근하기
-    //안드로이드 시스템 서비스에서 제공하는 API 를 호출 할 수 있는 기능
-    //http://arabiannight.tistory.com/entry/272 --> Context 관련정보
+
     private CascadeClassifier faceClassifier;
 
     private Handler openCVHandler = new Handler();
@@ -79,7 +76,6 @@ public class CVClassifierView extends View {
     private float top_y = 0;
 
     private boolean isFirst = true;
-
     public CVClassifierView(Context context) {
         super(context);
         ctx = context;
@@ -163,7 +159,6 @@ public class CVClassifierView extends View {
     public void pause() {
         if (getVisibility() == View.VISIBLE) {
             openCVThread.interrupt();
-
             try {
                 openCVThread.join();
             } catch (InterruptedException e) {
@@ -171,7 +166,6 @@ public class CVClassifierView extends View {
             }
         }
     }
-
     private void FaceDetect(Mat mat) {
         if(isFirst == true) {
             centerX = mat.width() / 2;
@@ -218,6 +212,8 @@ public class CVClassifierView extends View {
 
         public void interrupt() {
             interrupted = true;
+            facesArray = null;
+            invalidate();
         }
 
         @Override
@@ -266,7 +262,8 @@ public class CVClassifierView extends View {
 
                         runOnUiThread(new Runnable() {
                             @Override
-                            public void run() {invalidate();
+                            public void run() {
+                                invalidate();
                             }
                         });
                     }
