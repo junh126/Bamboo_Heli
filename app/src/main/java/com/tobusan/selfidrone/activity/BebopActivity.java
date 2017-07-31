@@ -155,7 +155,7 @@ public class BebopActivity extends AppCompatActivity {
                                         Toast.LENGTH_SHORT).show();
                                 break;
                             case R.id.FollowMe:
-                                if(isFollowed){
+                                if(isFollowed){ // 얼굴인식을 안할때 즉, unfollow일때
                                     isFollowed = false;
                                     mCVClassifierView.pause();
                                 }else{
@@ -436,11 +436,13 @@ public class BebopActivity extends AppCompatActivity {
             switch (state) {
                 case ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_LANDED:
                     mTakeOffLandBt.setImageLevel(LEVEL_TAKEOFF);
+                    mTakeOffLandBt.setEnabled(true);
                     mDownloadBt.setEnabled(true);
                     break;
                 case ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_FLYING:
                 case ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_HOVERING:
                     mTakeOffLandBt.setImageLevel(LEVEL_LAND);
+                    mTakeOffLandBt.setEnabled(true);
                     mDownloadBt.setEnabled(false);
                     break;
                 default:
