@@ -1,13 +1,11 @@
 package com.tobusan.selfidrone.view;
 
 
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -44,13 +42,9 @@ import com.tobusan.selfidrone.drone.BebopDrone;
 
 public class CVClassifierView extends View {
     private final static String CLASS_NAME = CVClassifierView.class.getSimpleName();
-    //getName()인 경우엔 sdksample.parrot.cse.bebopdrone.view.CVClassifierView가 return
-    //getSimpleName()인 경우엔 CVClassifierView가 return
+
     private final Context ctx;
-    //즉, Context  는 크게 두 가지 역할을 수행하는 Abstract 클래스 입니다.
-    //어플리케이션에 관하여 시스템이 관리하고 있는 정보에 접근하기
-    //안드로이드 시스템 서비스에서 제공하는 API 를 호출 할 수 있는 기능
-    //http://arabiannight.tistory.com/entry/272 --> Context 관련정보
+
     private CascadeClassifier faceClassifier;
 
     private Handler openCVHandler = new Handler();
@@ -71,6 +65,7 @@ public class CVClassifierView extends View {
     private float mainBoundRateX = 0;
     private float mainBoundRateY = 0;
 
+    private float mainFaceArea = 15000;
     private float preFaceArea = 0;
 
     private float mX = 0;
@@ -256,7 +251,7 @@ public class CVClassifierView extends View {
 
                     final MatOfRect faces = new MatOfRect();
 
-                    final int minRows = Math.round(mat.rows() * 0.09f);
+                    final int minRows = Math.round(mat.rows() * 0.07f);
 
                     final Size minSize = new Size(minRows, minRows);
                     final Size maxSize = new Size(0, 0);
@@ -269,7 +264,7 @@ public class CVClassifierView extends View {
                     submat = mat.submat(rect);
                     submat.assignTo(sub_submat);
 
-                    faceClassifier.detectMultiScale(sub_submat, faces, 1.05, 6, 0, minSize,maxSize);
+                    faceClassifier.detectMultiScale(sub_submat, faces, 1.05, 6, 0, minSize, maxSize);
 
                     synchronized (lock) {
                         facesArray = faces.toArray();
@@ -278,54 +273,53 @@ public class CVClassifierView extends View {
 
                         faces.release();
                         if(facesArray != null && facesArray.length > 0 & faceCenterX != 0 && faceCenterY != 0) {
+                            // 얼굴 사이즈 비교
+                            if(facesArray[0].area() != 0) {
+                                // 얼굴이 뒤로 간 경우
+                                if (mainFaceArea / facesArray[0].area() > 1.25f) {
+                                    bebopDrone.setPitch((byte) 4);
+                                    bebopDrone.setFlag((byte) 1);
+                                }
+                                // 얼굴이 앞으로 간 경우
+                                else if (mainFaceArea / facesArray[0].area() < 0.75f) {
+                                    bebopDrone.setPitch((byte) -4);
+                                    bebopDrone.setFlag((byte) 1);
+                                }
+                                else {
+                                    bebopDrone.setPitch((byte) 0);
+                                    bebopDrone.setFlag((byte) 0);
+                                }
+                            }
                             // 얼굴이 중심좌표에서 좌우로 갔을때
                             if(Math.abs(faceCenterX - mainCenterX) > mainBoundRateX) {
                                 // 얼굴이 왼쪽에 있는 경우
                                 if(mainCenterX > faceCenterX)
-                                    Log.v("Checking!","face is Left");
-                                    //    bebopDrone.setYaw((byte)-30);
+                                    bebopDrone.setYaw((byte)-10);
                                     // 얼굴이 오른쪽에 있는 경우
                                 else
-                                    Log.v("Checking!","face is Right");
-                                //bebopDrone.setYaw((byte)30);
-                                // bebopDrone.setYaw((byte)0);
+                                    bebopDrone.setYaw((byte)10);
+                            }
+                            else {
+                                bebopDrone.setYaw((byte)0);
                             }
                             // 얼굴이 중심좌표에서 위아래로 갔을때
-                            if(Math.abs(faceCenterY - mainCenterY) > mainBoundRateY) {
+                            if(Math.abs(faceCenterY - mainCenterY) > mainBoundRateY*1.5) {
                                 // 얼굴이 위쪽에 있는 경우
                                 if(mainCenterY > faceCenterY)
-                                    Log.v("Checking!","face is Up");
-                                    //    bebopDrone.setGaz((byte)30);
+                                    bebopDrone.setGaz((byte)10);
                                     // 얼굴이 아래쪽에 있는 경우
                                 else
-                                    Log.v("Checking!","face is Down");
-                                //    bebopDrone.setGaz((byte)-30);
-                                //bebopDrone.setGaz((byte)0);
+                                    bebopDrone.setGaz((byte)-10);
                             }
-                            // 얼굴의 크기가 바뀌는 경우
-                            if(preFaceArea != 0 && facesArray[0].area() != 0) {
-                                // 얼굴이 뒤로 간 경우
-                                if (preFaceArea / facesArray[0].area() > 1.1f) {
-                                    Log.v("Checking!","face is Back");
-                                    //bebopDrone.setFlag((byte) 1);
-                                    //bebopDrone.setPitch((byte) 30);
-                                    //bebopDrone.setFlag((byte) 0);
-                                }
-                                // 얼굴이 앞으로 간 경우
-                                else if (preFaceArea / facesArray[0].area() < 0.9f) {
-                                    Log.v("Checking!","face is Front");
-                                    //bebopDrone.setFlag((byte) 1);
-                                    //bebopDrone.setPitch((byte) -30);
-                                    //bebopDrone.setFlag((byte) 0);
-                                }
-                                else
-                                    ;
-                                //bebopDrone.setPitch((byte)0);
+                            else {
+                                bebopDrone.setGaz((byte)0);
                             }
-                            if(preFaceArea == 0 || preFaceArea / facesArray[0].area() > 0.95f && preFaceArea / facesArray[0].area() < 1.05f) {
-                                preFaceArea = (float) facesArray[0].area();
-                                Log.v("Checking!","Being stable");
-                            }
+                        }
+                        else {
+                            bebopDrone.setYaw((byte)0);
+                            bebopDrone.setGaz((byte)0);
+                            bebopDrone.setPitch((byte)0);
+                            bebopDrone.setFlag((byte) 0);
                         }
                         runOnUiThread(new Runnable() {
                             @Override
@@ -336,7 +330,7 @@ public class CVClassifierView extends View {
                     }
                 }
                 try {
-                    sleep(100);
+                    sleep(70);
                 } catch (InterruptedException e) {
                     interrupted = true;
                 }
@@ -368,6 +362,8 @@ public class CVClassifierView extends View {
 
                     faceCenterX = (top_x*2 + TopLeftX + BottomRightX)/2;
                     faceCenterY = (top_y*2 + TopLeftY + BottomRightY)/2;
+
+                    Log.v("Checking!","area : " + target.area());
                 }
             }
         }

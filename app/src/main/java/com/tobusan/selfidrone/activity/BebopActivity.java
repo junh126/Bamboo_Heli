@@ -160,7 +160,7 @@ public class BebopActivity extends AppCompatActivity {
                                     mCVClassifierView.pause();
                                 }else{
                                     isFollowed = true;
-                                    mCVClassifierView.resume(mVideoView, mImageView);
+                                    mCVClassifierView.resume(mVideoView, mImageView, mBebopDrone);
                                 }
                                 break;
                         }
