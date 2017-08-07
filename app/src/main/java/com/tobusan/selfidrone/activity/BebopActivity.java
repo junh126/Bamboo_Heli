@@ -46,7 +46,6 @@ public class BebopActivity extends AppCompatActivity {
     private ImageView mImageView;
 
     private ImageButton mTakeOffLandBt;
-    private Button mDownloadBt;
     private Button mAdditionalBt;
 
     private ImageView mBatteryIndicator;
@@ -190,13 +189,6 @@ public class BebopActivity extends AppCompatActivity {
         findViewById(R.id.takePictureBt).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 mBebopDrone.takePicture();
-            }
-        });
-
-        mDownloadBt = (Button)findViewById(R.id.downloadBt);
-        mDownloadBt.setEnabled(false);
-        mDownloadBt.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
                 mBebopDrone.getLastFlightMedias();
 
                 mDownloadProgressDialog = new ProgressDialog(BebopActivity.this, R.style.AppCompatAlertDialogStyle);
@@ -437,17 +429,14 @@ public class BebopActivity extends AppCompatActivity {
                 case ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_LANDED:
                     mTakeOffLandBt.setImageLevel(LEVEL_TAKEOFF);
                     mTakeOffLandBt.setEnabled(true);
-                    mDownloadBt.setEnabled(true);
                     break;
                 case ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_FLYING:
                 case ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_HOVERING:
                     mTakeOffLandBt.setImageLevel(LEVEL_LAND);
                     mTakeOffLandBt.setEnabled(true);
-                    mDownloadBt.setEnabled(false);
                     break;
                 default:
                     mTakeOffLandBt.setEnabled(false);
-                    mDownloadBt.setEnabled(false);
             }
         }
 
