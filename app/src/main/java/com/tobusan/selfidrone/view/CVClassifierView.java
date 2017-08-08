@@ -6,10 +6,12 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 
@@ -66,7 +68,6 @@ public class CVClassifierView extends View {
     private float mainBoundRateY = 0;
 
     private float mainFaceArea = 15000;
-    private float preFaceArea = 0;
 
     private float mX = 0;
     private float mY = 0;
@@ -84,6 +85,9 @@ public class CVClassifierView extends View {
     private float top_y = 0;
 
     private boolean isFirst = true;
+    private boolean followEnabled = false;
+
+    private Button followBtn;
 
     public CVClassifierView(Context context) {
         super(context);
@@ -129,6 +133,10 @@ public class CVClassifierView extends View {
         paint.setStrokeWidth(4f);
     }
 
+    public void setFollow() {
+        followEnabled = !followEnabled;
+    }
+
     private String cascadeFile(final int id) {
         final InputStream is = getResources().openRawResource(id);
 
@@ -155,11 +163,12 @@ public class CVClassifierView extends View {
         return cascadeFile.getAbsolutePath();
     }
 
-    public void resume(final BebopVideoView bebopVideoView, final ImageView cvPreviewView, final BebopDrone bebopDrone) {
+    public void resume(final BebopVideoView bebopVideoView, final ImageView cvPreviewView, final BebopDrone bebopDrone, Button sub_btn) {
         if (getVisibility() == View.VISIBLE) {
             this.bebopVideoView = bebopVideoView;
             this.cvPreviewView = cvPreviewView;
             this.bebopDrone = bebopDrone;
+            this.followBtn = sub_btn;
 
             openCVThread = new CascadingThread(ctx);
             openCVThread.start();
@@ -169,7 +178,6 @@ public class CVClassifierView extends View {
     public void pause() {
         if (getVisibility() == View.VISIBLE) {
             openCVThread.interrupt();
-
             try {
                 openCVThread.join();
             } catch (InterruptedException e) {
@@ -177,6 +185,7 @@ public class CVClassifierView extends View {
             }
         }
     }
+
     private void FaceDetect(Mat mat) {
         if(isFirst == true) {
             mainCenterX = mat.width() / 2;
@@ -224,8 +233,10 @@ public class CVClassifierView extends View {
             handler = new Handler(ctx.getMainLooper());
         }
 
+        @Override
         public void interrupt() {
             interrupted = true;
+            followEnabled = false;
             isFirst = true;
             facesArray = null;
             invalidate();
@@ -243,7 +254,6 @@ public class CVClassifierView extends View {
 
             while (!interrupted) {
                 final Bitmap source = bebopVideoView.getBitmap();
-
                 if (source != null) {
                     Utils.bitmapToMat(source, firstMat);
                     firstMat.assignTo(mat);
@@ -270,57 +280,62 @@ public class CVClassifierView extends View {
                         facesArray = faces.toArray();
                         mX = submat.width() / sub_submat.width();
                         mY = submat.height() / sub_submat.height();
-
                         faces.release();
-                        if(facesArray != null && facesArray.length > 0 & faceCenterX != 0 && faceCenterY != 0) {
+
+                        if (followEnabled  && facesArray != null && facesArray.length > 0 & faceCenterX != 0 && faceCenterY != 0) {
                             // 얼굴 사이즈 비교
-                            if(facesArray[0].area() != 0) {
+                            if (facesArray[0].area() != 0) {
                                 // 얼굴이 뒤로 간 경우
                                 if (mainFaceArea / facesArray[0].area() > 1.25f) {
-                                    bebopDrone.setPitch((byte) 4);
-                                    bebopDrone.setFlag((byte) 1);
+                                    // bebopDrone.setPitch((byte) 4);
+                                    // bebopDrone.setFlag((byte) 1);
                                 }
                                 // 얼굴이 앞으로 간 경우
                                 else if (mainFaceArea / facesArray[0].area() < 0.75f) {
-                                    bebopDrone.setPitch((byte) -4);
-                                    bebopDrone.setFlag((byte) 1);
+                                    // bebopDrone.setPitch((byte) -4);
+                                    // bebopDrone.setFlag((byte) 1);
                                 }
                                 else {
-                                    bebopDrone.setPitch((byte) 0);
-                                    bebopDrone.setFlag((byte) 0);
+                                    // bebopDrone.setPitch((byte) 0);
+                                    // bebopDrone.setFlag((byte) 0);
                                 }
                             }
                             // 얼굴이 중심좌표에서 좌우로 갔을때
-                            if(Math.abs(faceCenterX - mainCenterX) > mainBoundRateX) {
+                            if (Math.abs(faceCenterX - mainCenterX) > mainBoundRateX) {
                                 // 얼굴이 왼쪽에 있는 경우
-                                if(mainCenterX > faceCenterX)
-                                    bebopDrone.setYaw((byte)-10);
-                                    // 얼굴이 오른쪽에 있는 경우
+                                if (mainCenterX > faceCenterX) {
+                                    // bebopDrone.setYaw((byte) -10);
+                                }
+                                // 얼굴이 오른쪽에 있는 경우
                                 else
-                                    bebopDrone.setYaw((byte)10);
-                            }
-                            else {
-                                bebopDrone.setYaw((byte)0);
+                                    ;
+                                // bebopDrone.setYaw((byte) 10);
+                            } else {
+                                //   bebopDrone.setYaw((byte) 0);
                             }
                             // 얼굴이 중심좌표에서 위아래로 갔을때
-                            if(Math.abs(faceCenterY - mainCenterY) > mainBoundRateY*1.5) {
+                            if (Math.abs(faceCenterY - mainCenterY) > mainBoundRateY * 1.5) {
                                 // 얼굴이 위쪽에 있는 경우
-                                if(mainCenterY > faceCenterY)
-                                    bebopDrone.setGaz((byte)10);
+                                if (mainCenterY > faceCenterY)
+                                    ;
+                                    // bebopDrone.setGaz((byte) 10);
                                     // 얼굴이 아래쪽에 있는 경우
                                 else
-                                    bebopDrone.setGaz((byte)-10);
+                                    ;
+                                //   bebopDrone.setGaz((byte) -10);
+                            } else {
+                                //  bebopDrone.setGaz((byte) 0);
                             }
-                            else {
-                                bebopDrone.setGaz((byte)0);
-                            }
+                        } else {
+                            //bebopDrone.setYaw((byte) 0);
+                            //bebopDrone.setGaz((byte) 0);
+                            //bebopDrone.setPitch((byte) 0);
+                            //bebopDrone.setFlag((byte) 0);
                         }
-                        else {
-                            bebopDrone.setYaw((byte)0);
-                            bebopDrone.setGaz((byte)0);
-                            bebopDrone.setPitch((byte)0);
-                            bebopDrone.setFlag((byte) 0);
-                        }
+
+                        if(interrupted)
+                            facesArray = null;
+
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -348,10 +363,15 @@ public class CVClassifierView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        // Log.d(CLASS_NAME, "onDraw");
 
         synchronized(lock) {
+            if(followBtn != null) {
+                followBtn.setEnabled(false);
+                followBtn.setVisibility(INVISIBLE);
+            }
             if (facesArray != null && facesArray.length > 0) {
+                followBtn.setEnabled(true);
+                followBtn.setVisibility(VISIBLE);
                 for (Rect target : facesArray) {
                     float TopLeftX = (float) target.tl().x * mX;
                     float BottomRightX = (float) target.br().x * mX;
@@ -362,8 +382,6 @@ public class CVClassifierView extends View {
 
                     faceCenterX = (top_x*2 + TopLeftX + BottomRightX)/2;
                     faceCenterY = (top_y*2 + TopLeftY + BottomRightY)/2;
-
-                    Log.v("Checking!","area : " + target.area());
                 }
             }
         }

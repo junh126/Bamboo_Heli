@@ -54,7 +54,10 @@ public class BebopActivity extends AppCompatActivity {
     private ByteBuffer mPpsBuffer;
     private int mNbMaxDownload;
     private int mCurrentDownloadIndex;
-    private boolean isFollowed = false;
+    private boolean isDetect = false;
+
+    private Button followBtn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -120,6 +123,17 @@ public class BebopActivity extends AppCompatActivity {
 
         mBatteryIndicator = (ImageView) findViewById(R.id.battery_indicator);
 
+        followBtn = (Button)findViewById(R.id.followBtn);
+        followBtn.setEnabled(false);
+        followBtn.setVisibility(View.INVISIBLE);
+        followBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                mCVClassifierView.setFollow();
+            }
+        });
+
         findViewById(R.id.emergencyBt).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 mBebopDrone.emergency();
@@ -132,7 +146,7 @@ public class BebopActivity extends AppCompatActivity {
                 Context wrapper = new ContextThemeWrapper(getApplicationContext(), R.style.MyPopupMenu);
                 PopupMenu popup = new PopupMenu(wrapper, v);
 
-                if(isFollowed){
+                if(isDetect){
                     getMenuInflater().inflate(R.menu.popup_unfollow, popup.getMenu());
                 }else{
                     getMenuInflater().inflate(R.menu.popup_follow, popup.getMenu());
@@ -153,13 +167,17 @@ public class BebopActivity extends AppCompatActivity {
                                                 + item.getTitle(),
                                         Toast.LENGTH_SHORT).show();
                                 break;
-                            case R.id.FollowMe:
-                                if(isFollowed){ // 얼굴인식을 안할때 즉, unfollow일때
-                                    isFollowed = false;
+                            case R.id.Detect:
+                                if(isDetect){ // 얼굴인식을 안할때 즉, unfollow일때
+                                    isDetect = false;
                                     mCVClassifierView.pause();
+                                    // followBtn.setVisibility(View.INVISIBLE);
+                                    // followBtn.setEnabled(false);
                                 }else{
-                                    isFollowed = true;
-                                    mCVClassifierView.resume(mVideoView, mImageView, mBebopDrone);
+                                    isDetect = true;
+                                    mCVClassifierView.resume(mVideoView, mImageView, mBebopDrone, followBtn);
+                                    //followBtn.setVisibility(View.VISIBLE);
+                                    //followBtn.setEnabled(true);
                                 }
                                 break;
                         }

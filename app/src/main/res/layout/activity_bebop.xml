@@ -32,6 +32,15 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Follow"
+        android:id="@+id/followBtn"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="Emergency"
         android:id="@+id/emergencyBt"
         android:layout_alignParentTop="true"
