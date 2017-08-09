@@ -298,6 +298,10 @@ public class SDCardModule {
             if (!mIsCancelled) {
                 mediasDownloader.getDownloaderQueueRunnable().run();
             }
+
+            for(ARDataTransferMedia target : matchingMedias) {
+                mDataTransferManager.getARDataTransferMediasDownloader().deleteMedia(target);
+            }
         }
     }
 

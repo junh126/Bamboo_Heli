@@ -4,7 +4,11 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.PopupMenu;
@@ -13,8 +17,11 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parrot.arsdk.arcommands.ARCOMMANDS_ARDRONE3_MEDIARECORDEVENT_PICTUREEVENTCHANGED_ERROR_ENUM;
@@ -26,8 +33,10 @@ import com.parrot.arsdk.arcontroller.ARFrame;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
 import com.tobusan.selfidrone.R;
 import com.tobusan.selfidrone.drone.BebopDrone;
+import com.tobusan.selfidrone.drone.Beeper;
 import com.tobusan.selfidrone.view.BebopVideoView;
 import com.tobusan.selfidrone.view.CVClassifierView;
+import com.tobusan.selfidrone.view.SmileShot;
 
 import java.nio.ByteBuffer;
 
@@ -56,7 +65,18 @@ public class BebopActivity extends AppCompatActivity {
     private int mCurrentDownloadIndex;
     private boolean isDetect = false;
 
+    private boolean isSmile = false;
+    private SmileShot mSmileShot;
+
+    // variable for timer
+    private boolean isTimerMode = false;
     private Button followBtn;
+    private Button startBtn;
+    private TextView timer;
+    private SeekBar seekBar;
+    private CountDownTimer mCountDown = null;
+    private Beeper beep;
+    private Beeper beepFinish;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +133,47 @@ public class BebopActivity extends AppCompatActivity {
         mBebopDrone.dispose();
         super.onDestroy();
     }
+    private void timerStart(){
+        final int inputTime = Integer.parseInt(timer.getText().toString());
+        if(inputTime != 0){
+            mCountDown = new CountDownTimer((inputTime+1) * 1000, 1000) {
+                int nowTime = inputTime + 1;
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    beep.play();
+                    timer.setText(""+ (--nowTime));
+                }
+                @Override
+                public void onFinish() {
+                    timer.setText(""+ (--nowTime));
+                    takePicture();
+                    download();
+
+                    seekBar.setProgress(1);
+                }
+            }.start();
+        }
+    }
+
+    private void takePicture(){
+        beepFinish.play();
+        mBebopDrone.takePicture();
+    }
+    private void download() {
+        mBebopDrone.getLastFlightMedias();
+
+        mDownloadProgressDialog = new ProgressDialog(BebopActivity.this, R.style.AppCompatAlertDialogStyle);
+        mDownloadProgressDialog.setIndeterminate(true);
+        mDownloadProgressDialog.setMessage("Fetching medias");
+        mDownloadProgressDialog.setCancelable(false);
+        mDownloadProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mBebopDrone.cancelGetLastFlightMedias();
+            }
+        });
+        mDownloadProgressDialog.show();
+    }
 
     private void initIHM() {
         mVideoView = (BebopVideoView) findViewById(R.id.videoView);
@@ -120,6 +181,7 @@ public class BebopActivity extends AppCompatActivity {
 
         mCVClassifierView = (CVClassifierView)findViewById(R.id.cvcView);
         mImageView = (ImageView)findViewById(R.id.imageView);
+        mSmileShot = (SmileShot)findViewById(R.id.smileShot);
 
         mBatteryIndicator = (ImageView) findViewById(R.id.battery_indicator);
 
@@ -129,10 +191,42 @@ public class BebopActivity extends AppCompatActivity {
         followBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 mCVClassifierView.setFollow();
             }
         });
+
+        timer = (TextView) findViewById(R.id.TimerText);
+        timer.setEnabled(false);
+        timer.setVisibility(View.INVISIBLE);
+
+        seekBar = (SeekBar)findViewById(R.id.seekBar);
+        seekBar.setEnabled(false);
+        seekBar.setVisibility(View.INVISIBLE);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            public void onProgressChanged(SeekBar seekBar, int progress,
+                                          boolean fromUser) {
+                timer.setText("" + progress);
+            }
+        });
+
+        startBtn = (Button)findViewById(R.id.startBtn);
+        startBtn.setEnabled(false);
+        startBtn.setVisibility(View.INVISIBLE);
+        startBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                timerStart();
+            }
+        });
+
+        beep = new Beeper(this, R.raw.beep_repeat2);
+        beepFinish = new Beeper(this, R.raw.beep_camera);
 
         findViewById(R.id.emergencyBt).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -155,17 +249,37 @@ public class BebopActivity extends AppCompatActivity {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         switch(item.getItemId()){
-                            case R.id.WideShot:
-                                Toast.makeText(getApplicationContext(),
-                                        "popUpEvent - "
-                                                + item.getTitle(),
-                                        Toast.LENGTH_SHORT).show();
+                            case R.id.SmileShot:
+                                if(isSmile){ // 스마일 샷을 활성화 안했을 때
+                                    isSmile = false;
+                                    mSmileShot.pause();
+                                    download();
+                                }else{
+                                    isSmile = true;
+                                    mSmileShot.resume(mVideoView, mImageView, mBebopDrone, beepFinish);
+                                    Toast toast = Toast.makeText(getApplicationContext(), "얼굴을 화면 중앙에 맞추고 찰칵 소리가 날 때까지 웃으세요!", Toast.LENGTH_LONG);
+                                    toast.show();
+                                }
                                 break;
-                            case R.id.Shot45:
-                                Toast.makeText(getApplicationContext(),
-                                        "popUpEvent - "
-                                                + item.getTitle(),
-                                        Toast.LENGTH_SHORT).show();
+
+                            case R.id.Timer:
+                                if(isTimerMode){
+                                    isTimerMode = false;
+                                    startBtn.setVisibility(View.INVISIBLE);
+                                    startBtn.setEnabled(false);
+                                    timer.setVisibility(View.INVISIBLE);
+                                    timer.setEnabled(false);
+                                    seekBar.setVisibility(View.INVISIBLE);
+                                    seekBar.setEnabled(false);
+                                }else{
+                                    isTimerMode = true;
+                                    startBtn.setVisibility(View.VISIBLE);
+                                    startBtn.setEnabled(true);
+                                    timer.setVisibility(View.VISIBLE);
+                                    timer.setEnabled(true);
+                                    seekBar.setVisibility(View.VISIBLE);
+                                    seekBar.setEnabled(true);
+                                }
                                 break;
                             case R.id.Detect:
                                 if(isDetect){ // 얼굴인식을 안할때 즉, unfollow일때
@@ -206,20 +320,8 @@ public class BebopActivity extends AppCompatActivity {
 
         findViewById(R.id.takePictureBt).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                mBebopDrone.takePicture();
-                mBebopDrone.getLastFlightMedias();
-
-                mDownloadProgressDialog = new ProgressDialog(BebopActivity.this, R.style.AppCompatAlertDialogStyle);
-                mDownloadProgressDialog.setIndeterminate(true);
-                mDownloadProgressDialog.setMessage("Fetching medias");
-                mDownloadProgressDialog.setCancelable(false);
-                mDownloadProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mBebopDrone.cancelGetLastFlightMedias();
-                    }
-                });
-                mDownloadProgressDialog.show();
+                takePicture();
+                download();
             }
         });
 

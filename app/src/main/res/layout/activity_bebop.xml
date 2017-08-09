@@ -15,6 +15,11 @@
         android:id="@+id/cvcView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+    <com.tobusan.selfidrone.view.SmileShot
+        android:id="@+id/smileShot"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -37,6 +42,35 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Time Start"
+        android:id="@+id/startBtn"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="3"
+        android:textSize="50sp"
+        android:id="@+id/TimerText"
+        android:inputType="number"
+        android:layout_above="@+id/seekBar"
+        android:layout_toLeftOf="@+id/btn_gaz_down"
+        android:layout_toStartOf="@+id/btn_gaz_down" />
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:progress="3"
+        android:max="10"
+        android:layout_alignParentBottom="true"
+        android:layout_alignLeft="@+id/btn_yaw_left"
+        android:layout_alignStart="@+id/btn_yaw_left" />
 
     <Button
         android:layout_width="wrap_content"
@@ -148,5 +182,6 @@
         android:layout_toRightOf="@+id/btn_roll_left"
         android:contentDescription="@string/movement_back"
         app:srcCompat="@drawable/ic_move_back_24dp"/>
+
 
 </RelativeLayout>
