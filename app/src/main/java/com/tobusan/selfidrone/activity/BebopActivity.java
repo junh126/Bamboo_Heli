@@ -323,11 +323,11 @@ public class BebopActivity extends AppCompatActivity {
                                     } catch (InterruptedException e) {
                                         e.printStackTrace();
                                     }
-                                    popupMenuString[4] = "WideShot Start";
+                                    popupMenuString[3] = "WideShot Start";
                                 }else{
                                     isWide = true;
                                     mWideShot.start();
-                                    popupMenuString[4] = "WideShot Stop";
+                                    popupMenuString[3] = "WideShot Stop";
                                 }
                                 break;
                         }
