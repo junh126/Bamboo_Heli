@@ -4,11 +4,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.PopupMenu;
@@ -17,7 +14,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -35,7 +31,7 @@ import com.tobusan.selfidrone.R;
 import com.tobusan.selfidrone.drone.BebopDrone;
 import com.tobusan.selfidrone.drone.Beeper;
 import com.tobusan.selfidrone.view.BebopVideoView;
-import com.tobusan.selfidrone.view.CVClassifierView;
+import com.tobusan.selfidrone.view.FaceDetect;
 import com.tobusan.selfidrone.view.SmileShot;
 import com.tobusan.selfidrone.view.WideShot;
 
@@ -52,7 +48,7 @@ public class BebopActivity extends AppCompatActivity {
     private ProgressDialog mDownloadProgressDialog;
 
     private BebopVideoView mVideoView;
-    private CVClassifierView mCVClassifierView;
+    private FaceDetect mFaceDetect;
     private ImageView mImageView;
 
     private ImageButton mTakeOffLandBt;
@@ -188,7 +184,7 @@ public class BebopActivity extends AppCompatActivity {
         mVideoView = (BebopVideoView) findViewById(R.id.videoView);
         mVideoView.setSurfaceTextureListener(mVideoView);
 
-        mCVClassifierView = (CVClassifierView)findViewById(R.id.cvcView);
+        mFaceDetect = (FaceDetect)findViewById(R.id.faceDetect);
         mImageView = (ImageView)findViewById(R.id.imageView);
         mSmileShot = (SmileShot)findViewById(R.id.smileShot);
 
@@ -202,7 +198,7 @@ public class BebopActivity extends AppCompatActivity {
         followBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCVClassifierView.setFollow();
+                mFaceDetect.setFollow();
             }
         });
 
@@ -305,13 +301,13 @@ public class BebopActivity extends AppCompatActivity {
                             case R.id.Detect:
                                 if(isDetect){ // 얼굴인식을 안할때 즉, unfollow일때
                                     isDetect = false;
-                                    mCVClassifierView.pause();
+                                    mFaceDetect.pause();
                                     popupMenuString[2] = "Detect ON";
                                     // followBtn.setVisibility(View.INVISIBLE);
                                     // followBtn.setEnabled(false);
                                 }else{
                                     isDetect = true;
-                                    mCVClassifierView.resume(mVideoView, mImageView, mBebopDrone, followBtn);
+                                    mFaceDetect.resume(mVideoView, mImageView, mBebopDrone, followBtn);
                                     popupMenuString[2] = "Detect OFF";
                                     //followBtn.setVisibility(View.VISIBLE);
                                     //followBtn.setEnabled(true);

@@ -15,34 +15,23 @@ import android.widget.ImageView;
 
 
 import org.opencv.android.Utils;
-import org.opencv.core.Core;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfInt;
-import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfRect;
-import org.opencv.core.Point;
 import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
 import org.opencv.core.Size;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.imgproc.Moments;
 import org.opencv.objdetect.CascadeClassifier;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
-
-import static org.opencv.core.CvType.CV_8U;
 
 import com.tobusan.selfidrone.R;
 import com.tobusan.selfidrone.drone.BebopDrone;
 
-public class CVClassifierView extends View {
-    private final static String CLASS_NAME = CVClassifierView.class.getSimpleName();
+public class FaceDetect extends View {
+    private final static String CLASS_NAME = FaceDetect.class.getSimpleName();
 
     private final Context ctx;
 
@@ -88,7 +77,7 @@ public class CVClassifierView extends View {
 
     private Button followBtn;
 
-    public CVClassifierView(Context context) {
+    public FaceDetect(Context context) {
         super(context);
         ctx = context;
 
@@ -102,7 +91,7 @@ public class CVClassifierView extends View {
         paint.setStrokeWidth(4f);
     }
 
-    public CVClassifierView(Context context, AttributeSet attrs) {
+    public FaceDetect(Context context, AttributeSet attrs) {
         super(context,attrs);
         ctx = context;
 
@@ -116,7 +105,7 @@ public class CVClassifierView extends View {
         paint.setStrokeWidth(4f);
     }
 
-    public CVClassifierView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public FaceDetect(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         ctx = context;
