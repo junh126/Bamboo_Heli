@@ -63,6 +63,8 @@ public class BebopActivity extends AppCompatActivity {
     private int mCurrentDownloadIndex;
     private boolean isDetect = false;
 
+    private boolean isFollow = false;
+
     private boolean isSmile = false;
     private SmileShot mSmileShot;
 
@@ -198,7 +200,15 @@ public class BebopActivity extends AppCompatActivity {
         followBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mFaceDetect.setFollow();
+                if(isFollow){
+                    isFollow = false;
+                    followBtn.setText("Follow ON");
+                }else{
+                    isFollow = true;
+                    mFaceDetect.setFollow();
+                    followBtn.setText("Follow OFF");
+
+                }
             }
         });
 
@@ -317,19 +327,15 @@ public class BebopActivity extends AppCompatActivity {
                             case R.id.WideShot:
                                 if(isWide){
                                     isWide = false;
-                                    mWideShot.interrupt();
-                                    try {
-                                        mWideShot.join();
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
+                                    mWideShot.pause();
                                     popupMenuString[3] = "WideShot Start";
                                 }else{
                                     isWide = true;
-                                    mWideShot.start();
+                                    mWideShot.resume();
                                     popupMenuString[3] = "WideShot Stop";
                                 }
                                 break;
+
                         }
                         return false;
                     }
