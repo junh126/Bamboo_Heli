@@ -12,9 +12,6 @@ public class WideShot extends Thread {
     public WideShot(BebopDrone bebopDrone){
         this.bebopDrone = bebopDrone;
     }
-    public void setBebopDrone(BebopDrone drone) {
-        this.bebopDrone = drone;
-    }
 
     public void stop_shot() {
         bebopDrone.setPitch((byte)0);
