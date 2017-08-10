@@ -39,7 +39,7 @@
         android:layout_height="wrap_content"
         android:text="Follow"
         android:id="@+id/followBtn"
-        android:layout_alignParentBottom="true"
+        android:layout_above="@+id/startBtn"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
@@ -82,13 +82,24 @@
         android:width="150dp"/>
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:text="Take picture"
         android:id="@+id/takePictureBt"
+        android:width="150dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/btn_gaz_up"
+        android:layout_alignEnd="@+id/btn_gaz_up" />
+
+    <Button
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:text="Down load"
+        android:id="@+id/downloadBt"
+        android:width="150dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
-        android:width="150dp"/>
+        android:layout_alignParentEnd="true" />
 
     <ImageView
         android:id="@+id/battery_indicator"

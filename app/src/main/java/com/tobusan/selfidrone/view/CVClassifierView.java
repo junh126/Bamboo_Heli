@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -287,50 +286,49 @@ public class CVClassifierView extends View {
                             if (facesArray[0].area() != 0) {
                                 // 얼굴이 뒤로 간 경우
                                 if (mainFaceArea / facesArray[0].area() > 1.25f) {
-                                    // bebopDrone.setPitch((byte) 4);
-                                    // bebopDrone.setFlag((byte) 1);
+                                    bebopDrone.setPitch((byte) 4);
+                                    bebopDrone.setFlag((byte) 1);
                                 }
                                 // 얼굴이 앞으로 간 경우
                                 else if (mainFaceArea / facesArray[0].area() < 0.75f) {
-                                    // bebopDrone.setPitch((byte) -4);
-                                    // bebopDrone.setFlag((byte) 1);
+                                    bebopDrone.setPitch((byte) -4);
+                                    bebopDrone.setFlag((byte) 1);
                                 }
                                 else {
-                                    // bebopDrone.setPitch((byte) 0);
-                                    // bebopDrone.setFlag((byte) 0);
+                                    bebopDrone.setPitch((byte) 0);
+                                    bebopDrone.setFlag((byte) 0);
                                 }
                             }
                             // 얼굴이 중심좌표에서 좌우로 갔을때
                             if (Math.abs(faceCenterX - mainCenterX) > mainBoundRateX) {
                                 // 얼굴이 왼쪽에 있는 경우
                                 if (mainCenterX > faceCenterX) {
-                                    // bebopDrone.setYaw((byte) -10);
+                                    bebopDrone.setYaw((byte) -10);
                                 }
                                 // 얼굴이 오른쪽에 있는 경우
                                 else
                                     ;
-                                // bebopDrone.setYaw((byte) 10);
+                                bebopDrone.setYaw((byte) 10);
                             } else {
-                                //   bebopDrone.setYaw((byte) 0);
+                                bebopDrone.setYaw((byte) 0);
                             }
                             // 얼굴이 중심좌표에서 위아래로 갔을때
                             if (Math.abs(faceCenterY - mainCenterY) > mainBoundRateY * 1.5) {
                                 // 얼굴이 위쪽에 있는 경우
                                 if (mainCenterY > faceCenterY)
-                                    ;
-                                    // bebopDrone.setGaz((byte) 10);
+                                    bebopDrone.setGaz((byte) 10);
                                     // 얼굴이 아래쪽에 있는 경우
                                 else
-                                    ;
-                                //   bebopDrone.setGaz((byte) -10);
+                                    bebopDrone.setGaz((byte) -10);
+                                //
                             } else {
-                                //  bebopDrone.setGaz((byte) 0);
+                                bebopDrone.setGaz((byte) 0);
                             }
                         } else {
-                            //bebopDrone.setYaw((byte) 0);
-                            //bebopDrone.setGaz((byte) 0);
-                            //bebopDrone.setPitch((byte) 0);
-                            //bebopDrone.setFlag((byte) 0);
+                            bebopDrone.setYaw((byte) 0);
+                            bebopDrone.setGaz((byte) 0);
+                            bebopDrone.setPitch((byte) 0);
+                            bebopDrone.setFlag((byte) 0);
                         }
 
                         if(interrupted)

@@ -37,6 +37,7 @@ import com.tobusan.selfidrone.drone.Beeper;
 import com.tobusan.selfidrone.view.BebopVideoView;
 import com.tobusan.selfidrone.view.CVClassifierView;
 import com.tobusan.selfidrone.view.SmileShot;
+import com.tobusan.selfidrone.view.WideShot;
 
 import java.nio.ByteBuffer;
 
@@ -56,6 +57,7 @@ public class BebopActivity extends AppCompatActivity {
 
     private ImageButton mTakeOffLandBt;
     private Button mAdditionalBt;
+    private Button mDownloadBt;
 
     private ImageView mBatteryIndicator;
 
@@ -77,6 +79,12 @@ public class BebopActivity extends AppCompatActivity {
     private CountDownTimer mCountDown = null;
     private Beeper beep;
     private Beeper beepFinish;
+
+
+    private boolean isWide = false;
+    private WideShot mWideShot;
+
+    private String[] popupMenuString = {"SmileShot ON", "Timer ON", "Detect ON", "WideShot Start"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,7 +155,7 @@ public class BebopActivity extends AppCompatActivity {
                 public void onFinish() {
                     timer.setText(""+ (--nowTime));
                     takePicture();
-                    download();
+                    //download();
 
                     seekBar.setProgress(1);
                 }
@@ -159,6 +167,7 @@ public class BebopActivity extends AppCompatActivity {
         beepFinish.play();
         mBebopDrone.takePicture();
     }
+
     private void download() {
         mBebopDrone.getLastFlightMedias();
 
@@ -182,6 +191,8 @@ public class BebopActivity extends AppCompatActivity {
         mCVClassifierView = (CVClassifierView)findViewById(R.id.cvcView);
         mImageView = (ImageView)findViewById(R.id.imageView);
         mSmileShot = (SmileShot)findViewById(R.id.smileShot);
+
+        mWideShot = new WideShot(mBebopDrone);
 
         mBatteryIndicator = (ImageView) findViewById(R.id.battery_indicator);
 
@@ -234,17 +245,23 @@ public class BebopActivity extends AppCompatActivity {
             }
         });
 
+        mDownloadBt = (Button)findViewById(R.id.downloadBt);
+        mDownloadBt.setEnabled(true);
+        mDownloadBt.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                download();
+            }
+        });
+
         mAdditionalBt = (Button)findViewById(R.id.additionalMenu);
         mAdditionalBt.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 Context wrapper = new ContextThemeWrapper(getApplicationContext(), R.style.MyPopupMenu);
                 PopupMenu popup = new PopupMenu(wrapper, v);
-
-                if(isDetect){
-                    getMenuInflater().inflate(R.menu.popup_unfollow, popup.getMenu());
-                }else{
-                    getMenuInflater().inflate(R.menu.popup_follow, popup.getMenu());
-                }
+                popup.getMenu().add(1, R.id.SmileShot, 1, popupMenuString[0]);
+                popup.getMenu().add(1, R.id.Timer, 2, popupMenuString[1]);
+                popup.getMenu().add(1, R.id.Detect, 3, popupMenuString[2]);
+                popup.getMenu().add(1, R.id.WideShot, 4, popupMenuString[3]);
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
@@ -253,12 +270,14 @@ public class BebopActivity extends AppCompatActivity {
                                 if(isSmile){ // 스마일 샷을 활성화 안했을 때
                                     isSmile = false;
                                     mSmileShot.pause();
-                                    download();
+                                    //download();
+                                    popupMenuString[0] = "SmileShot ON";
                                 }else{
                                     isSmile = true;
                                     mSmileShot.resume(mVideoView, mImageView, mBebopDrone, beepFinish);
                                     Toast toast = Toast.makeText(getApplicationContext(), "얼굴을 화면 중앙에 맞추고 찰칵 소리가 날 때까지 웃으세요!", Toast.LENGTH_LONG);
                                     toast.show();
+                                    popupMenuString[0] = "SmileShot OFF";
                                 }
                                 break;
 
@@ -271,6 +290,7 @@ public class BebopActivity extends AppCompatActivity {
                                     timer.setEnabled(false);
                                     seekBar.setVisibility(View.INVISIBLE);
                                     seekBar.setEnabled(false);
+                                    popupMenuString[1] = "Timer ON";
                                 }else{
                                     isTimerMode = true;
                                     startBtn.setVisibility(View.VISIBLE);
@@ -279,19 +299,39 @@ public class BebopActivity extends AppCompatActivity {
                                     timer.setEnabled(true);
                                     seekBar.setVisibility(View.VISIBLE);
                                     seekBar.setEnabled(true);
+                                    popupMenuString[1] = "Timer OFF";
                                 }
                                 break;
                             case R.id.Detect:
                                 if(isDetect){ // 얼굴인식을 안할때 즉, unfollow일때
                                     isDetect = false;
                                     mCVClassifierView.pause();
+                                    popupMenuString[2] = "Detect ON";
                                     // followBtn.setVisibility(View.INVISIBLE);
                                     // followBtn.setEnabled(false);
                                 }else{
                                     isDetect = true;
                                     mCVClassifierView.resume(mVideoView, mImageView, mBebopDrone, followBtn);
+                                    popupMenuString[2] = "Detect OFF";
                                     //followBtn.setVisibility(View.VISIBLE);
                                     //followBtn.setEnabled(true);
+                                }
+                                break;
+
+                            case R.id.WideShot:
+                                if(isWide){
+                                    isWide = false;
+                                    mWideShot.interrupt();
+                                    try {
+                                        mWideShot.join();
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                    popupMenuString[4] = "WideShot Start";
+                                }else{
+                                    isWide = true;
+                                    mWideShot.start();
+                                    popupMenuString[4] = "WideShot Stop";
                                 }
                                 break;
                         }
@@ -320,8 +360,7 @@ public class BebopActivity extends AppCompatActivity {
 
         findViewById(R.id.takePictureBt).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                takePicture();
-                download();
+                mBebopDrone.takePicture();
             }
         });
 

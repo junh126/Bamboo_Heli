@@ -9,4 +9,7 @@
     <item
         android:id="@+id/Detect"
         android:title="Detect" />
+    <item
+        android:id="@+id/WideShot"
+        android:title="WideShot" />
 </menu>

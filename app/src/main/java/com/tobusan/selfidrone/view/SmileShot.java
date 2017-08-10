@@ -245,8 +245,8 @@ public class SmileShot extends View{
                         smiles.release();
 
                         cTime = System.currentTimeMillis();
-                        if(cTime - sTime > 1000) {
-                            if(count >= 4) {
+                        if(cTime - sTime > 1500) {
+                            if(count >= 6) {
                                 beepFinsh.play();
                                 bebopDrone.takePicture();
                             }
