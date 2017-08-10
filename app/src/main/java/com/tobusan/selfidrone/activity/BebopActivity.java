@@ -190,7 +190,7 @@ public class BebopActivity extends AppCompatActivity {
         mImageView = (ImageView)findViewById(R.id.imageView);
         mSmileShot = (SmileShot)findViewById(R.id.smileShot);
 
-        mWideShot = new WideShot(mBebopDrone);
+        mWideShot = new WideShot();
 
         mBatteryIndicator = (ImageView) findViewById(R.id.battery_indicator);
 
@@ -313,14 +313,12 @@ public class BebopActivity extends AppCompatActivity {
                                     isDetect = false;
                                     mFaceDetect.pause();
                                     popupMenuString[2] = "Detect ON";
-                                    // followBtn.setVisibility(View.INVISIBLE);
-                                    // followBtn.setEnabled(false);
+                                    isFollow = false;
+                                    followBtn.setText("Follow ON");
                                 }else{
                                     isDetect = true;
                                     mFaceDetect.resume(mVideoView, mImageView, mBebopDrone, followBtn);
                                     popupMenuString[2] = "Detect OFF";
-                                    //followBtn.setVisibility(View.VISIBLE);
-                                    //followBtn.setEnabled(true);
                                 }
                                 break;
 
@@ -331,7 +329,7 @@ public class BebopActivity extends AppCompatActivity {
                                     popupMenuString[3] = "WideShot Start";
                                 }else{
                                     isWide = true;
-                                    mWideShot.resume();
+                                    mWideShot.resume(mBebopDrone, beepFinish);
                                     popupMenuString[3] = "WideShot Stop";
                                 }
                                 break;
@@ -362,7 +360,7 @@ public class BebopActivity extends AppCompatActivity {
 
         findViewById(R.id.takePictureBt).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                mBebopDrone.takePicture();
+                takePicture();
             }
         });
 

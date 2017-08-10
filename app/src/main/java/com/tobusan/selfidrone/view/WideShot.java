@@ -1,9 +1,7 @@
 package com.tobusan.selfidrone.view;
 
-
-import com.tobusan.selfidrone.R;
 import com.tobusan.selfidrone.drone.BebopDrone;
-
+import com.tobusan.selfidrone.drone.Beeper;
 
 public class WideShot{
     private final static String CLASS_NAME = WideShot.class.getSimpleName();
@@ -12,11 +10,12 @@ public class WideShot{
 
     private BebopDrone bebopDrone = null;
 
-    public WideShot(BebopDrone drone) {
-        this.bebopDrone = drone;
-    }
+    private Beeper beeper = null;
 
-    public void resume() {
+    public void resume(final BebopDrone bebopDrone, final Beeper beeper) {
+        this.bebopDrone = bebopDrone;
+        this.beeper = beeper;
+
         WideThread = new CascadingThread();
         WideThread.start();
     }
@@ -42,7 +41,7 @@ public class WideShot{
             bebopDrone.setPitch((byte)-10);
             bebopDrone.setFlag((byte)1);
             try {
-                sleep(2000);
+                sleep(3000);
             } catch (InterruptedException e) {
                 bebopDrone.setPitch((byte)0);
                 bebopDrone.setFlag((byte)0);
@@ -50,19 +49,20 @@ public class WideShot{
             bebopDrone.setPitch((byte)0);
             bebopDrone.setFlag((byte)0);
 
-            bebopDrone.setGaz((byte)10);
+            bebopDrone.setGaz((byte)30);
             try {
-                sleep(2000);
+                sleep(3000);
             } catch (InterruptedException e) {
                 bebopDrone.setGaz((byte)0);
             }
             bebopDrone.setGaz((byte)0);
 
+            beeper.play();
             bebopDrone.takePicture();
 
-            bebopDrone.setGaz((byte)-10);
+            bebopDrone.setGaz((byte)-30);
             try {
-                sleep(2000);
+                sleep(3000);
             } catch (InterruptedException e) {
                 bebopDrone.setGaz((byte)0);
             }
@@ -71,7 +71,7 @@ public class WideShot{
             bebopDrone.setPitch((byte)10);
             bebopDrone.setFlag((byte)1);
             try {
-                sleep(2000);
+                sleep(3000);
             } catch (InterruptedException e) {
                 bebopDrone.setPitch((byte)0);
                 bebopDrone.setFlag((byte)0);

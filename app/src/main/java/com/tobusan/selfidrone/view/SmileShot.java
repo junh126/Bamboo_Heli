@@ -6,38 +6,26 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 
 
 import org.opencv.android.Utils;
-import org.opencv.core.Core;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfInt;
-import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfRect;
-import org.opencv.core.Point;
 import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
 import org.opencv.core.Size;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.imgproc.Moments;
 import org.opencv.objdetect.CascadeClassifier;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
-import static org.opencv.core.CvType.CV_8U;
 
 import com.tobusan.selfidrone.R;
 import com.tobusan.selfidrone.drone.BebopDrone;
@@ -226,6 +214,8 @@ public class SmileShot extends View{
                     final Size minSize = new Size(minRows, minRows);
                     final Size maxSize = new Size(0, 0);
 
+                    final Size min_smile_Size = new Size(minRows*0.2f, minRows*0.2f);
+
                     FaceDetect(mat);
 
                     rect = new Rect((int)top_x,(int)top_y,(int)rateX,(int)rateY);
@@ -233,8 +223,8 @@ public class SmileShot extends View{
                     submat = mat.submat(rect);
                     submat.assignTo(sub_submat);
 
-                    faceClassifier.detectMultiScale(sub_submat, faces, 1.05, 6, 0, minSize, maxSize);
-                    smileClassifier.detectMultiScale(sub_submat, smiles, 1.05, 6, 0, minSize, maxSize);
+                    faceClassifier.detectMultiScale(sub_submat, faces, 1.05,6,0, minSize, maxSize);
+                    smileClassifier.detectMultiScale(sub_submat, smiles, 1.05, 6, 0, min_smile_Size, maxSize);
 
                     synchronized (lock) {
                         facesArray = faces.toArray();
@@ -245,8 +235,8 @@ public class SmileShot extends View{
                         smiles.release();
 
                         cTime = System.currentTimeMillis();
-                        if(cTime - sTime > 1500) {
-                            if(count >= 6) {
+                        if(cTime - sTime > 1200) {
+                            if(count >= 2) {
                                 beepFinsh.play();
                                 bebopDrone.takePicture();
                             }
