@@ -1,5 +1,6 @@
 package com.tobusan.selfidrone.view;
 
+import android.os.CountDownTimer;
 
 import com.tobusan.selfidrone.drone.BebopDrone;
 import com.tobusan.selfidrone.drone.Beeper;
@@ -11,11 +12,14 @@ public class WideShot{
 
     private BebopDrone bebopDrone = null;
 
-    private Beeper beeper = null;
+    private Beeper beep = null;
+    private Beeper beepFinish = null;
+    private CountDownTimer mCountDown = null;
 
-    public void resume(final BebopDrone bebopDrone, final Beeper beeper) {
+    public void resume(final BebopDrone bebopDrone, final Beeper beep, final Beeper beepFinish) {
         this.bebopDrone = bebopDrone;
-        this.beeper = beeper;
+        this.beep = beep;
+        this.beepFinish = beepFinish;
 
         WideThread = new CascadingThread();
         WideThread.start();
@@ -29,7 +33,24 @@ public class WideShot{
             e.printStackTrace();
         }
     }
-
+    private void takePicture(){
+        beepFinish.play();
+        bebopDrone.takePicture();
+    }
+    private void timerStart(int inputTime){
+        if(inputTime != 0){
+            mCountDown = new CountDownTimer((inputTime+1) * 1000, 1000) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    beep.play();
+                }
+                @Override
+                public void onFinish() {
+                    takePicture();
+                }
+            }.start();
+        }
+    }
     private class CascadingThread extends Thread {
 
         private void stop_shot() {
@@ -62,12 +83,12 @@ public class WideShot{
 
 
             try {
-                sleep(3000);
+                sleep(5000);
             } catch (InterruptedException e) {
                 bebopDrone.setGaz((byte)0);
             }
-            beeper.play();
-            bebopDrone.takePicture();
+            timerStart(5);
+
 
             bebopDrone.setGaz((byte)-30);
             try {

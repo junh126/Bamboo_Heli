@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -53,6 +54,11 @@ public class BebopActivity extends AppCompatActivity {
 
     private ImageButton mTakeOffLandBt;
     private ImageButton mAdditionalBt;
+    private GridLayout mAddtionalItems;
+    private ToggleButton mDetectBt;
+    private ToggleButton mWideShotBt;
+    private ToggleButton mTimerBt;
+
     private ImageButton mDownloadBt;
 
     private ImageView mBatteryIndicator;
@@ -80,7 +86,7 @@ public class BebopActivity extends AppCompatActivity {
     private boolean isWide = false;
     private WideShot mWideShot;
 
-    private String[] popupMenuString = {"Detect ON", "Timer ON", "WideShot Start"};
+    private  boolean isAdditional = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -284,72 +290,78 @@ public class BebopActivity extends AppCompatActivity {
             }
         });
 
+        mAddtionalItems = (GridLayout)findViewById(R.id.additionalMenuItems);
+        mAddtionalItems.setEnabled(false);
+        mAddtionalItems.setVisibility(View.INVISIBLE);
+
+        mDetectBt = (ToggleButton)findViewById(R.id.Detect);
+        mDetectBt.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                if(isDetect){ // 얼굴인식을 안할때 즉, unfollow일때
+                    isDetect = false;
+                    mFaceDetect.pause();
+                    mDetectBt.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_detect_off));
+                    isFollow = false;
+                    followBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_follow_off));
+                    smileBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_smile_off));
+                }else{
+                    isDetect = true;
+                    mFaceDetect.resume(mVideoView, mImageView, mBebopDrone, followBtn, smileBtn, beepFinish);
+                    mDetectBt.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_detect_on));
+                }
+            }
+        });
+        mWideShotBt = (ToggleButton)findViewById(R.id.WideShot);
+        mWideShotBt.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                if(isWide){
+                    isWide = false;
+                    mWideShot.pause();
+                    mWideShotBt.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_wideshot_off));
+                }else{
+                    isWide = true;
+                    mWideShot.resume(mBebopDrone, beep, beepFinish);
+                    mWideShotBt.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_wideshot_on));
+                }
+            }
+        });
+        mTimerBt = (ToggleButton)findViewById(R.id.Timer);
+        mTimerBt.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                if(isTimerMode){
+                    isTimerMode = false;
+                    startBtn.setVisibility(View.INVISIBLE);
+                    startBtn.setEnabled(false);
+                    timer.setVisibility(View.INVISIBLE);
+                    timer.setEnabled(false);
+                    seekBar.setVisibility(View.INVISIBLE);
+                    seekBar.setEnabled(false);
+                    mTimerBt.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_timer_off));
+                }else{
+                    isTimerMode = true;
+                    startBtn.setVisibility(View.VISIBLE);
+                    startBtn.setEnabled(true);
+                    timer.setVisibility(View.VISIBLE);
+                    timer.setEnabled(true);
+                    seekBar.setVisibility(View.VISIBLE);
+                    seekBar.setEnabled(true);
+                    mTimerBt.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_timer_on));
+                }
+            }
+        });
+
         mAdditionalBt = (ImageButton)findViewById(R.id.additionalMenu);
         mAdditionalBt.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                Context wrapper = new ContextThemeWrapper(getApplicationContext(), R.style.MyPopupMenu);
-                PopupMenu popup = new PopupMenu(wrapper, v);
-                popup.getMenu().add(1, R.id.Detect, 1, popupMenuString[0]);
-                popup.getMenu().add(1, R.id.Timer, 2, popupMenuString[1]);
-                popup.getMenu().add(1, R.id.WideShot, 3, popupMenuString[2]);
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        switch(item.getItemId()){
-                            case R.id.Detect:
-                                if(isDetect){ // 얼굴인식을 안할때 즉, unfollow일때
-                                    isDetect = false;
-                                    mFaceDetect.pause();
-                                    popupMenuString[0] = "Detect ON";
-                                    isFollow = false;
-                                    followBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_follow_off));
-                                    smileBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_smile_off));
-                                }else{
-                                    isDetect = true;
-                                    mFaceDetect.resume(mVideoView, mImageView, mBebopDrone, followBtn, smileBtn, beepFinish);
-                                    popupMenuString[0] = "Detect OFF";
-                                }
-                                break;
-
-                            case R.id.Timer:
-                                if(isTimerMode){
-                                    isTimerMode = false;
-                                    startBtn.setVisibility(View.INVISIBLE);
-                                    startBtn.setEnabled(false);
-                                    timer.setVisibility(View.INVISIBLE);
-                                    timer.setEnabled(false);
-                                    seekBar.setVisibility(View.INVISIBLE);
-                                    seekBar.setEnabled(false);
-                                    popupMenuString[1] = "Timer ON";
-                                }else{
-                                    isTimerMode = true;
-                                    startBtn.setVisibility(View.VISIBLE);
-                                    startBtn.setEnabled(true);
-                                    timer.setVisibility(View.VISIBLE);
-                                    timer.setEnabled(true);
-                                    seekBar.setVisibility(View.VISIBLE);
-                                    seekBar.setEnabled(true);
-                                    popupMenuString[1] = "Timer OFF";
-                                }
-                                break;
-
-                            case R.id.WideShot:
-                                if(isWide){
-                                    isWide = false;
-                                    mWideShot.pause();
-                                    popupMenuString[2] = "WideShot Start";
-                                }else{
-                                    isWide = true;
-                                    mWideShot.resume(mBebopDrone, beepFinish);
-                                    popupMenuString[2] = "WideShot Stop";
-                                }
-                                break;
-
-                        }
-                        return false;
-                    }
-                });
-                popup.show();
+                if(isAdditional){
+                    isAdditional = false;
+                    mAddtionalItems.setEnabled(false);
+                    mAddtionalItems.setVisibility(View.INVISIBLE);
+                }else{
+                    isAdditional = true;
+                    mAddtionalItems.setEnabled(true);
+                    mAddtionalItems.setVisibility(View.VISIBLE);
+                }
             }
         });
 
