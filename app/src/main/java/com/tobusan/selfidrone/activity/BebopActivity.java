@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.parrot.arsdk.arcommands.ARCOMMANDS_ARDRONE3_MEDIARECORDEVENT_PICTUREEVENTCHANGED_ERROR_ENUM;
 import com.parrot.arsdk.arcommands.ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM;
@@ -32,7 +33,6 @@ import com.tobusan.selfidrone.drone.BebopDrone;
 import com.tobusan.selfidrone.drone.Beeper;
 import com.tobusan.selfidrone.view.BebopVideoView;
 import com.tobusan.selfidrone.view.FaceDetect;
-import com.tobusan.selfidrone.view.SmileShot;
 import com.tobusan.selfidrone.view.WideShot;
 
 import java.nio.ByteBuffer;
@@ -52,8 +52,8 @@ public class BebopActivity extends AppCompatActivity {
     private ImageView mImageView;
 
     private ImageButton mTakeOffLandBt;
-    private Button mAdditionalBt;
-    private Button mDownloadBt;
+    private ImageButton mAdditionalBt;
+    private ImageButton mDownloadBt;
 
     private ImageView mBatteryIndicator;
 
@@ -62,16 +62,14 @@ public class BebopActivity extends AppCompatActivity {
     private int mNbMaxDownload;
     private int mCurrentDownloadIndex;
     private boolean isDetect = false;
-
     private boolean isFollow = false;
-
     private boolean isSmile = false;
-    private SmileShot mSmileShot;
 
     // variable for timer
     private boolean isTimerMode = false;
-    private Button followBtn;
-    private Button startBtn;
+    private ToggleButton followBtn;
+    private ToggleButton smileBtn;
+    private ImageButton startBtn;
     private TextView timer;
     private SeekBar seekBar;
     private CountDownTimer mCountDown = null;
@@ -82,7 +80,7 @@ public class BebopActivity extends AppCompatActivity {
     private boolean isWide = false;
     private WideShot mWideShot;
 
-    private String[] popupMenuString = {"SmileShot ON", "Timer ON", "Detect ON", "WideShot Start"};
+    private String[] popupMenuString = {"Detect ON", "Timer ON", "WideShot Start"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -188,13 +186,12 @@ public class BebopActivity extends AppCompatActivity {
 
         mFaceDetect = (FaceDetect)findViewById(R.id.faceDetect);
         mImageView = (ImageView)findViewById(R.id.imageView);
-        mSmileShot = (SmileShot)findViewById(R.id.smileShot);
 
         mWideShot = new WideShot();
 
         mBatteryIndicator = (ImageView) findViewById(R.id.battery_indicator);
 
-        followBtn = (Button)findViewById(R.id.followBtn);
+        followBtn = (ToggleButton)findViewById(R.id.followBtn);
         followBtn.setEnabled(false);
         followBtn.setVisibility(View.INVISIBLE);
         followBtn.setOnClickListener(new View.OnClickListener() {
@@ -202,12 +199,18 @@ public class BebopActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if(isFollow){
                     isFollow = false;
-                    followBtn.setText("Follow ON");
+                    mFaceDetect.resetFollow();
+                    smileBtn.setVisibility(View.INVISIBLE);
+                    followBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_follow_off));
+                    Toast toast = Toast.makeText(getApplicationContext(), "Follow off", Toast.LENGTH_LONG);
+                    toast.show();
                 }else{
                     isFollow = true;
                     mFaceDetect.setFollow();
-                    followBtn.setText("Follow OFF");
-
+                    smileBtn.setVisibility(View.VISIBLE);
+                    followBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_follow_on));
+                    Toast toast = Toast.makeText(getApplicationContext(), "Follow on", Toast.LENGTH_LONG);
+                    toast.show();
                 }
             }
         });
@@ -232,13 +235,35 @@ public class BebopActivity extends AppCompatActivity {
             }
         });
 
-        startBtn = (Button)findViewById(R.id.startBtn);
+        startBtn = (ImageButton)findViewById(R.id.startBtn);
         startBtn.setEnabled(false);
         startBtn.setVisibility(View.INVISIBLE);
         startBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 timerStart();
+            }
+        });
+
+        smileBtn = (ToggleButton)findViewById(R.id.smileBtn);
+        smileBtn.setEnabled(false);
+        smileBtn.setVisibility(View.INVISIBLE);
+        smileBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(isSmile){
+                    isSmile = false;
+                    mFaceDetect.resetSmileShot();
+                    smileBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_smile_off));
+                    Toast toast = Toast.makeText(getApplicationContext(), "Smile off", Toast.LENGTH_LONG);
+                    toast.show();
+                }else{
+                    isSmile = true;
+                    mFaceDetect.setSmileShot();
+                    smileBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_smile_on));
+                    Toast toast = Toast.makeText(getApplicationContext(), "얼굴을 화면 중앙에 맞추고 찰칵 소리가 날 때까지 웃으세요!", Toast.LENGTH_LONG);
+                    toast.show();
+                }
             }
         });
 
@@ -251,7 +276,7 @@ public class BebopActivity extends AppCompatActivity {
             }
         });
 
-        mDownloadBt = (Button)findViewById(R.id.downloadBt);
+        mDownloadBt = (ImageButton)findViewById(R.id.downloadBt);
         mDownloadBt.setEnabled(true);
         mDownloadBt.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -259,31 +284,30 @@ public class BebopActivity extends AppCompatActivity {
             }
         });
 
-        mAdditionalBt = (Button)findViewById(R.id.additionalMenu);
+        mAdditionalBt = (ImageButton)findViewById(R.id.additionalMenu);
         mAdditionalBt.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 Context wrapper = new ContextThemeWrapper(getApplicationContext(), R.style.MyPopupMenu);
                 PopupMenu popup = new PopupMenu(wrapper, v);
-                popup.getMenu().add(1, R.id.SmileShot, 1, popupMenuString[0]);
+                popup.getMenu().add(1, R.id.Detect, 1, popupMenuString[0]);
                 popup.getMenu().add(1, R.id.Timer, 2, popupMenuString[1]);
-                popup.getMenu().add(1, R.id.Detect, 3, popupMenuString[2]);
-                popup.getMenu().add(1, R.id.WideShot, 4, popupMenuString[3]);
+                popup.getMenu().add(1, R.id.WideShot, 3, popupMenuString[2]);
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         switch(item.getItemId()){
-                            case R.id.SmileShot:
-                                if(isSmile){ // 스마일 샷을 활성화 안했을 때
-                                    isSmile = false;
-                                    mSmileShot.pause();
-                                    //download();
-                                    popupMenuString[0] = "SmileShot ON";
+                            case R.id.Detect:
+                                if(isDetect){ // 얼굴인식을 안할때 즉, unfollow일때
+                                    isDetect = false;
+                                    mFaceDetect.pause();
+                                    popupMenuString[0] = "Detect ON";
+                                    isFollow = false;
+                                    followBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_follow_off));
+                                    smileBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_smile_off));
                                 }else{
-                                    isSmile = true;
-                                    mSmileShot.resume(mVideoView, mImageView, mBebopDrone, beepFinish);
-                                    Toast toast = Toast.makeText(getApplicationContext(), "얼굴을 화면 중앙에 맞추고 찰칵 소리가 날 때까지 웃으세요!", Toast.LENGTH_LONG);
-                                    toast.show();
-                                    popupMenuString[0] = "SmileShot OFF";
+                                    isDetect = true;
+                                    mFaceDetect.resume(mVideoView, mImageView, mBebopDrone, followBtn, smileBtn, beepFinish);
+                                    popupMenuString[0] = "Detect OFF";
                                 }
                                 break;
 
@@ -308,29 +332,16 @@ public class BebopActivity extends AppCompatActivity {
                                     popupMenuString[1] = "Timer OFF";
                                 }
                                 break;
-                            case R.id.Detect:
-                                if(isDetect){ // 얼굴인식을 안할때 즉, unfollow일때
-                                    isDetect = false;
-                                    mFaceDetect.pause();
-                                    popupMenuString[2] = "Detect ON";
-                                    isFollow = false;
-                                    followBtn.setText("Follow ON");
-                                }else{
-                                    isDetect = true;
-                                    mFaceDetect.resume(mVideoView, mImageView, mBebopDrone, followBtn);
-                                    popupMenuString[2] = "Detect OFF";
-                                }
-                                break;
 
                             case R.id.WideShot:
                                 if(isWide){
                                     isWide = false;
                                     mWideShot.pause();
-                                    popupMenuString[3] = "WideShot Start";
+                                    popupMenuString[2] = "WideShot Start";
                                 }else{
                                     isWide = true;
                                     mWideShot.resume(mBebopDrone, beepFinish);
-                                    popupMenuString[3] = "WideShot Stop";
+                                    popupMenuString[2] = "WideShot Stop";
                                 }
                                 break;
 

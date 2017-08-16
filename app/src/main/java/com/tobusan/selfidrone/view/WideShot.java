@@ -1,5 +1,6 @@
 package com.tobusan.selfidrone.view;
 
+
 import com.tobusan.selfidrone.drone.BebopDrone;
 import com.tobusan.selfidrone.drone.Beeper;
 
@@ -53,10 +54,18 @@ public class WideShot{
             try {
                 sleep(3000);
             } catch (InterruptedException e) {
+                bebopDrone.setPitch((byte)0);
+                bebopDrone.setFlag((byte)0);
                 bebopDrone.setGaz((byte)0);
             }
             bebopDrone.setGaz((byte)0);
 
+
+            try {
+                sleep(3000);
+            } catch (InterruptedException e) {
+                bebopDrone.setGaz((byte)0);
+            }
             beeper.play();
             bebopDrone.takePicture();
 

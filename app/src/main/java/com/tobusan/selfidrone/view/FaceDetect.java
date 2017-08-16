@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ToggleButton;
+
 
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
@@ -28,6 +30,7 @@ import java.util.Locale;
 
 import com.tobusan.selfidrone.R;
 import com.tobusan.selfidrone.drone.BebopDrone;
+import com.tobusan.selfidrone.drone.Beeper;
 
 public class FaceDetect extends View {
     private final static String CLASS_NAME = FaceDetect.class.getSimpleName();
@@ -35,6 +38,7 @@ public class FaceDetect extends View {
     private final Context ctx;
 
     private CascadeClassifier faceClassifier;
+    private CascadeClassifier smileClassifier;
 
     private Handler openCVHandler = new Handler();
     private Thread openCVThread = null;
@@ -43,9 +47,13 @@ public class FaceDetect extends View {
     private ImageView cvPreviewView = null;
     private BebopDrone bebopDrone = null;
 
-    private Rect[] facesArray = null;
+    private Beeper beepFinsh = null;
 
-    private Paint paint;
+    private Rect[] facesArray = null;
+    private Rect[] smileArray = null;
+
+    private Paint paint_green;
+    private Paint paint_red;
 
     private final Object lock = new Object();
 
@@ -71,23 +79,37 @@ public class FaceDetect extends View {
     private float top_x = 0;
     private float top_y = 0;
 
+    private long sTime = System.currentTimeMillis();
+    private long cTime;
+
     private boolean isFirst = true;
     private boolean followEnabled = false;
+    private boolean smileEnabled = false;
 
-    private Button followBtn;
+    private int count = 0;
+
+    private ToggleButton followBtn;
+    private ToggleButton smileBtn;
 
     public FaceDetect(Context context) {
         super(context);
         ctx = context;
 
         faceClassifier = new CascadeClassifier(cascadeFile(R.raw.haarcascade_frontalface_alt2));
+        smileClassifier = new CascadeClassifier(cascadeFile(R.raw.haarcascade_smile));
 
         // initialize our canvas paint object
-        paint = new Paint();
-        paint.setAntiAlias(true);
-        paint.setColor(Color.GREEN);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(4f);
+        paint_green = new Paint();
+        paint_green.setAntiAlias(true);
+        paint_green.setColor(Color.parseColor("#22b3ab"));
+        paint_green.setStyle(Paint.Style.STROKE);
+        paint_green.setStrokeWidth(4f);
+
+        paint_red = new Paint();
+        paint_red.setAntiAlias(true);
+        paint_red.setStyle(Paint.Style.STROKE);
+        paint_red.setColor(Color.RED);
+        paint_red.setStrokeWidth(4f);
     }
 
     public FaceDetect(Context context, AttributeSet attrs) {
@@ -95,13 +117,20 @@ public class FaceDetect extends View {
         ctx = context;
 
         faceClassifier = new CascadeClassifier(cascadeFile(R.raw.haarcascade_frontalface_alt2));
+        smileClassifier = new CascadeClassifier(cascadeFile(R.raw.haarcascade_smile));
 
         // initialize our canvas paint object
-        paint = new Paint();
-        paint.setAntiAlias(true);
-        paint.setColor(Color.GREEN);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(4f);
+        paint_green = new Paint();
+        paint_green.setAntiAlias(true);
+        paint_green.setColor(Color.GREEN);
+        paint_green.setStyle(Paint.Style.STROKE);
+        paint_green.setStrokeWidth(4f);
+
+        paint_red = new Paint();
+        paint_red.setAntiAlias(true);
+        paint_red.setStyle(Paint.Style.STROKE);
+        paint_red.setColor(Color.RED);
+        paint_red.setStrokeWidth(4f);
     }
 
     public FaceDetect(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -111,17 +140,36 @@ public class FaceDetect extends View {
 
         // initialize our opencv cascade classifiers
         faceClassifier = new CascadeClassifier(cascadeFile(R.raw.haarcascade_frontalface_alt2));
+        smileClassifier = new CascadeClassifier(cascadeFile(R.raw.haarcascade_smile));
 
         // initialize our canvas paint object
-        paint = new Paint();
-        paint.setAntiAlias(true);
-        paint.setColor(Color.GREEN);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(4f);
+        paint_green = new Paint();
+        paint_green.setAntiAlias(true);
+        paint_green.setColor(Color.GREEN);
+        paint_green.setStyle(Paint.Style.STROKE);
+        paint_green.setStrokeWidth(4f);
+
+        paint_red = new Paint();
+        paint_red.setAntiAlias(true);
+        paint_red.setStyle(Paint.Style.STROKE);
+        paint_red.setColor(Color.RED);
+        paint_red.setStrokeWidth(4f);
     }
 
     public void setFollow() {
-        followEnabled = !followEnabled;
+        followEnabled = true;
+    }
+
+    public void resetFollow() {
+        followEnabled = false;
+    }
+
+    public void setSmileShot() {
+        smileEnabled = true;
+    }
+
+    public void resetSmileShot() {
+        smileEnabled = false;
     }
 
     private String cascadeFile(final int id) {
@@ -150,12 +198,14 @@ public class FaceDetect extends View {
         return cascadeFile.getAbsolutePath();
     }
 
-    public void resume(final BebopVideoView bebopVideoView, final ImageView cvPreviewView, final BebopDrone bebopDrone, Button sub_btn) {
+    public void resume(final BebopVideoView bebopVideoView, final ImageView cvPreviewView, final BebopDrone bebopDrone, ToggleButton followBtn, ToggleButton smileBtn, final Beeper beepFinish) {
         if (getVisibility() == View.VISIBLE) {
             this.bebopVideoView = bebopVideoView;
             this.cvPreviewView = cvPreviewView;
             this.bebopDrone = bebopDrone;
-            this.followBtn = sub_btn;
+            this.followBtn = followBtn;
+            this.smileBtn = smileBtn;
+            this.beepFinsh = beepFinish;
 
             openCVThread = new CascadingThread(ctx);
             openCVThread.start();
@@ -173,7 +223,7 @@ public class FaceDetect extends View {
         }
     }
 
-    private void FaceDetect(Mat mat) {
+    private void FaceRecognition(Mat mat) {
         if(isFirst == true) {
             mainCenterX = mat.width() / 2;
             mainCenterY = mat.height() / 2;
@@ -224,8 +274,10 @@ public class FaceDetect extends View {
         public void interrupt() {
             interrupted = true;
             followEnabled = false;
+            smileEnabled = false;
             isFirst = true;
             facesArray = null;
+            smileArray = null;
             invalidate();
         }
 
@@ -247,21 +299,26 @@ public class FaceDetect extends View {
                     Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGBA2GRAY);
 
                     final MatOfRect faces = new MatOfRect();
+                    final MatOfRect smiles = new MatOfRect();
 
                     final int minRows = Math.round(mat.rows() * 0.07f);
 
                     final Size minSize = new Size(minRows, minRows);
                     final Size maxSize = new Size(0, 0);
 
-                    FaceDetect(mat);
+                    final Size min_smile_Size = new Size(minRows*0.2f, minRows*0.2f);
+
+                    FaceRecognition(mat);
                     FaceTrack(mat);
 
-                    rect = new Rect((int)top_x,(int)top_y,(int)rateX,(int)rateY);
+                    rect = new Rect((int)top_x, (int)top_y, (int)rateX, (int)rateY);
 
                     submat = mat.submat(rect);
                     submat.assignTo(sub_submat);
 
-                    faceClassifier.detectMultiScale(sub_submat, faces, 1.05, 6, 0, minSize, maxSize);
+                    faceClassifier.detectMultiScale(sub_submat, faces, 1.15, 6, 0, minSize, maxSize);
+                    if(smileEnabled == true)
+                        smileClassifier.detectMultiScale(sub_submat, smiles, 3, 6, 0, min_smile_Size, maxSize);
 
                     synchronized (lock) {
                         facesArray = faces.toArray();
@@ -295,8 +352,7 @@ public class FaceDetect extends View {
                                 }
                                 // 얼굴이 오른쪽에 있는 경우
                                 else
-                                    ;
-                                bebopDrone.setYaw((byte) 10);
+                                    bebopDrone.setYaw((byte) 10);
                             } else {
                                 bebopDrone.setYaw((byte) 0);
                             }
@@ -308,7 +364,6 @@ public class FaceDetect extends View {
                                     // 얼굴이 아래쪽에 있는 경우
                                 else
                                     bebopDrone.setGaz((byte) -10);
-                                //
                             } else {
                                 bebopDrone.setGaz((byte) 0);
                             }
@@ -319,8 +374,23 @@ public class FaceDetect extends View {
                             bebopDrone.setFlag((byte) 0);
                         }
 
-                        if(interrupted)
+                        if(smileEnabled == true) {
+                            smileArray = smiles.toArray();
+                            smiles.release();
+                            cTime = System.currentTimeMillis();
+                            if (cTime - sTime > 1200) {
+                                if (count >= 2) {
+                                    beepFinsh.play();
+                                    bebopDrone.takePicture();
+                                }
+                                sTime = cTime;
+                                count = 0;
+                            }
+                        }
+                        if(interrupted){
                             facesArray = null;
+                            smileArray = null;
+                        }
 
                         runOnUiThread(new Runnable() {
                             @Override
@@ -331,7 +401,7 @@ public class FaceDetect extends View {
                     }
                 }
                 try {
-                    sleep(70);
+                    sleep(60);
                 } catch (InterruptedException e) {
                     interrupted = true;
                 }
@@ -349,25 +419,40 @@ public class FaceDetect extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-
         synchronized(lock) {
-            if(followBtn != null) {
+            if(followBtn != null && smileBtn != null && followEnabled != true) {
                 followBtn.setEnabled(false);
                 followBtn.setVisibility(INVISIBLE);
+                smileBtn.setEnabled(false);
+                smileBtn.setVisibility(INVISIBLE);
             }
             if (facesArray != null && facesArray.length > 0) {
                 followBtn.setEnabled(true);
                 followBtn.setVisibility(VISIBLE);
-                for (Rect target : facesArray) {
-                    float TopLeftX = (float) target.tl().x * mX;
-                    float BottomRightX = (float) target.br().x * mX;
-                    float TopLeftY = (float) target.tl().y * mY;
-                    float BottomRightY = (float) target.br().y * mY;
+                smileBtn.setEnabled(true);
 
-                    canvas.drawRect(top_x + TopLeftX, top_y + TopLeftY, top_x + BottomRightX, top_y + BottomRightY, paint);
+                float faceTLX = (float) facesArray[0].tl().x * mX;
+                float faceBRX = (float) facesArray[0].br().x * mX;
+                float faceTLY = (float) facesArray[0].tl().y * mY;
+                float faceBRY = (float) facesArray[0].br().y * mY;
 
-                    faceCenterX = (top_x*2 + TopLeftX + BottomRightX)/2;
-                    faceCenterY = (top_y*2 + TopLeftY + BottomRightY)/2;
+                canvas.drawRect(top_x + faceTLX, top_y + faceTLY, top_x + faceBRX, top_y + faceBRY, paint_green);
+
+                faceCenterX = (top_x*2 + faceTLX + faceBRX)/2;
+                faceCenterY = (top_y*2 + faceTLY + faceBRY)/2;
+
+                if(smileEnabled == true) {
+                    for (Rect target : smileArray) {
+                        float TopLeftX = (float) target.tl().x * mX;
+                        float BottomRightX = (float) target.br().x * mX;
+                        float TopLeftY = (float) target.tl().y * mY;
+                        float BottomRightY = (float) target.br().y * mY;
+
+                        if (faceTLX < TopLeftX && faceBRX > BottomRightX && (faceTLY + (faceBRY - faceTLY) / 2) < TopLeftY && faceBRY > BottomRightY) {
+                            canvas.drawRect(top_x + TopLeftX, top_y + TopLeftY, top_x + BottomRightX, top_y + BottomRightY, paint_red);
+                            count++;
+                        }
+                    }
                 }
             }
         }

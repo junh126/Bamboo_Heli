@@ -15,52 +15,75 @@
         android:id="@+id/faceDetect"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
-    <com.tobusan.selfidrone.view.SmileShot
-        android:id="@+id/smileShot"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/imageView"/>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="ADDITIONAL MENU"
+    <ImageButton
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginBottom="5sp"
+        android:layout_marginLeft="5sp"
+        android:scaleType="centerCrop"
+        android:background="@android:color/transparent"
+        app:srcCompat="@drawable/if_menu"
         android:id="@+id/additionalMenu"
         android:layout_alignParentBottom="true"
-        android:layout_alignRight="@+id/btn_back"
-        android:layout_alignEnd="@+id/btn_back" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Follow On"
+    <ToggleButton
+        android:layout_width="65dp"
+        android:layout_height="55dp"
+        android:layout_marginRight="5sp"
+        android:background="@drawable/if_follow_off"
+        android:textOff=" "
+        android:textOn=" "
         android:id="@+id/followBtn"
-        android:layout_above="@+id/startBtn"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Time Start"
-        android:id="@+id/startBtn"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
+
+    <ToggleButton
+        android:layout_width="40dp"
+        android:layout_height="30dp"
+        android:layout_marginRight="5sp"
+        android:background="@drawable/if_smile_off"
+        android:textOff=" "
+        android:textOn=" "
+        android:id="@+id/smileBtn"
+        android:layout_above="@+id/followBtn"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <ImageButton
+        android:layout_width="32dp"
+        android:layout_height="39dp"
+        android:padding="0sp"
+        android:scaleType="centerCrop"
+        android:background="@android:color/transparent"
+        app:srcCompat="@drawable/if_stopwatch"
+        android:id="@+id/startBtn"
+        android:layout_alignTop="@+id/takePictureBt"
+        android:layout_toLeftOf="@+id/takePictureBt"
+        android:layout_toStartOf="@+id/takePictureBt"
+        android:layout_marginRight="11dp"
+        android:layout_marginEnd="11dp" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="3"
-        android:textSize="50sp"
+        android:textSize="30sp"
         android:id="@+id/TimerText"
+        android:textColor="#FFFFFF"
         android:inputType="number"
         android:layout_above="@+id/seekBar"
-        android:layout_toLeftOf="@+id/btn_gaz_down"
-        android:layout_toStartOf="@+id/btn_gaz_down" />
+        android:layout_marginRight="11dp"
+        android:layout_toLeftOf="@+id/startBtn"
+        android:layout_toStartOf="@+id/startBtn" />
 
     <SeekBar
         android:id="@+id/seekBar"
@@ -68,49 +91,61 @@
         android:layout_height="wrap_content"
         android:progress="3"
         android:max="10"
-        android:layout_alignParentBottom="true"
-        android:layout_alignLeft="@+id/btn_yaw_left"
-        android:layout_alignStart="@+id/btn_yaw_left" />
+        android:layout_below="@+id/startBtn"
+        android:layout_alignRight="@+id/startBtn"
+        android:layout_alignEnd="@+id/startBtn"
+        android:layout_marginRight="11dp"
+        android:layout_marginEnd="11dp" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Emergency"
+    <ImageButton
+        android:layout_width="34dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="5sp"
+        android:scaleType="centerCrop"
+        android:background="@android:color/transparent"
+        app:srcCompat="@drawable/if_emergency"
         android:id="@+id/emergencyBt"
+        android:width="150dp"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:width="150dp"/>
+        android:layout_toRightOf="@+id/battery_indicator"
+        android:layout_toEndOf="@+id/battery_indicator" />
 
-    <Button
-        android:layout_width="80dp"
-        android:layout_height="wrap_content"
-        android:text="Take picture"
+    <ImageButton
+        android:layout_width="44dp"
+        android:layout_height="35dp"
+        android:layout_marginRight="8sp"
+        android:scaleType="centerCrop"
+        android:background="@android:color/transparent"
+        app:srcCompat="@drawable/if_camera"
         android:id="@+id/takePictureBt"
         android:width="150dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignRight="@+id/btn_gaz_up"
-        android:layout_alignEnd="@+id/btn_gaz_up" />
+        android:layout_alignTop="@+id/downloadBt"
+        android:layout_toLeftOf="@+id/downloadBt"
+        android:layout_toStartOf="@+id/downloadBt" />
 
-    <Button
-        android:layout_width="80dp"
-        android:layout_height="wrap_content"
-        android:text="Down load"
+    <ImageButton
+        android:layout_width="44dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="5sp"
+        android:scaleType="centerCrop"
+        android:background="@android:color/transparent"
+        app:srcCompat="@drawable/if_download"
         android:id="@+id/downloadBt"
         android:width="150dp"
-        android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
     <ImageView
         android:id="@+id/battery_indicator"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+        android:layout_width="34dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="5sp"
         android:contentDescription="@string/battery_level_indicator"
         android:tint="@android:color/white"
         app:srcCompat="@drawable/battery_state_list"
         android:layout_alignParentTop="true"
-        android:layout_alignLeft="@+id/additionalMenu"
-        android:layout_alignStart="@+id/additionalMenu" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <ImageButton
         android:id="@+id/btn_takeoff_land"

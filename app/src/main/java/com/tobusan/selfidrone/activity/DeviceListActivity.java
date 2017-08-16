@@ -3,17 +3,21 @@ package com.tobusan.selfidrone.activity;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,7 +56,8 @@ public class DeviceListActivity extends AppCompatActivity {
     public DroneDiscoverer mDroneDiscoverer;
 
     private final List<ARDiscoveryDeviceService> mDronesList = new ArrayList<>();
-
+    private ImageView mEmptyView;
+    private ImageView mConnectView;
     // this block loads the native libraries
     // it is mandatory
     static {
@@ -74,6 +79,20 @@ public class DeviceListActivity extends AppCompatActivity {
             }
         }
     };
+    private void showEmptyView(boolean shown) {
+        if (mEmptyView == null) {
+            mEmptyView = ((ImageView) findViewById(R.id.isEmpty));
+        }
+        mEmptyView.setVisibility(shown ? View.VISIBLE : View.GONE);
+    }
+
+    private void showConnectView(boolean shown) {
+        if (mConnectView == null) {
+            mConnectView = ((ImageView) findViewById(R.id.isConnect));
+        }
+        mConnectView.setVisibility(!shown ? View.VISIBLE : View.GONE);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -193,6 +212,9 @@ public class DeviceListActivity extends AppCompatActivity {
             mDronesList.addAll(dronesList);
 
             mAdapter.notifyDataSetChanged();
+
+            showEmptyView(mDronesList.isEmpty());
+            showConnectView(mDronesList.isEmpty());
         }
     };
 
@@ -237,8 +259,9 @@ public class DeviceListActivity extends AppCompatActivity {
             // fill data
             ViewHolder holder = (ViewHolder) rowView.getTag();
             ARDiscoveryDeviceService service = (ARDiscoveryDeviceService)getItem(position);
-            holder.text.setText(service.getName() + " on " + service.getNetworkType());
-
+            holder.text.setText("Device Name is " + service.getName());
+            holder.text.setTextSize(20);
+            holder.text.setGravity(Gravity.CENTER);
             return rowView;
         }
     };
