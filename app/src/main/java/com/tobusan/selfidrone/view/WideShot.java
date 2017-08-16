@@ -1,5 +1,6 @@
 package com.tobusan.selfidrone.view;
 
+
 import android.os.CountDownTimer;
 
 import com.tobusan.selfidrone.drone.BebopDrone;
@@ -14,7 +15,6 @@ public class WideShot{
 
     private Beeper beep = null;
     private Beeper beepFinish = null;
-    private CountDownTimer mCountDown = null;
 
     public void resume(final BebopDrone bebopDrone, final Beeper beep, final Beeper beepFinish) {
         this.bebopDrone = bebopDrone;
@@ -37,21 +37,25 @@ public class WideShot{
         beepFinish.play();
         bebopDrone.takePicture();
     }
-    private void timerStart(int inputTime){
-        if(inputTime != 0){
-            mCountDown = new CountDownTimer((inputTime+1) * 1000, 1000) {
-                @Override
-                public void onTick(long millisUntilFinished) {
-                    beep.play();
-                }
-                @Override
-                public void onFinish() {
-                    takePicture();
-                }
-            }.start();
-        }
-    }
     private class CascadingThread extends Thread {
+        private CountDownTimer mCountDown = null;
+
+        private void timerStart(int inputTime){
+            for(int i = 0; i < inputTime -1; i++){
+                try{
+                    sleep(1000);
+                }catch (InterruptedException e){
+                    bebopDrone.setGaz((byte)0);
+                }
+                beep.play();
+            }
+            try{
+                sleep(1000);
+            }catch (InterruptedException e){
+                bebopDrone.setGaz((byte)0);
+            }
+            takePicture();
+        }
 
         private void stop_shot() {
             bebopDrone.setPitch((byte)0);
@@ -81,14 +85,7 @@ public class WideShot{
             }
             bebopDrone.setGaz((byte)0);
 
-
-            try {
-                sleep(5000);
-            } catch (InterruptedException e) {
-                bebopDrone.setGaz((byte)0);
-            }
-            timerStart(5);
-
+            timerStart(3);
 
             bebopDrone.setGaz((byte)-30);
             try {

@@ -36,7 +36,7 @@
         android:layout_height="wrap_content"
         android:text="Manual"
         android:textSize="30sp"
-        android:textColor="@color/mtrl_indigo_700"
+        android:textColor="#17375c"
         android:background="@android:color/transparent"
         android:id="@+id/Manual"
         android:layout_alignParentBottom="true"

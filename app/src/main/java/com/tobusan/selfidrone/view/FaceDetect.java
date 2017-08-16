@@ -1,6 +1,7 @@
 package com.tobusan.selfidrone.view;
 
 
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -306,17 +307,17 @@ public class FaceDetect extends View {
                     final Size minSize = new Size(minRows, minRows);
                     final Size maxSize = new Size(0, 0);
 
-                    final Size min_smile_Size = new Size(minRows*0.2f, minRows*0.2f);
+                    final Size min_smile_Size = new Size(minRows*0.1f, minRows*0.1f);
 
                     FaceRecognition(mat);
                     FaceTrack(mat);
 
-                    rect = new Rect((int)top_x, (int)top_y, (int)rateX, (int)rateY);
+                    rect = new Rect((int)top_x,(int)top_y,(int)rateX,(int)rateY);
 
                     submat = mat.submat(rect);
                     submat.assignTo(sub_submat);
 
-                    faceClassifier.detectMultiScale(sub_submat, faces, 1.15, 6, 0, minSize, maxSize);
+                    faceClassifier.detectMultiScale(sub_submat, faces, 1.25, 6, 0, minSize, maxSize);
                     if(smileEnabled == true)
                         smileClassifier.detectMultiScale(sub_submat, smiles, 3, 6, 0, min_smile_Size, maxSize);
 
