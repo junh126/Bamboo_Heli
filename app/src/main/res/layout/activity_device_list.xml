@@ -31,4 +31,15 @@
         android:src="@drawable/ic_connect_device_list"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="82dp" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Manual"
+        android:textSize="30sp"
+        android:textColor="@color/mtrl_indigo_700"
+        android:background="@android:color/transparent"
+        android:id="@+id/Manual"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"/>
+
 </RelativeLayout>

@@ -18,14 +18,22 @@
             android:theme="@style/AppTheme.NoActionBar.Fullscreen" />
         <activity
             android:name=".activity.DeviceListActivity"
-            android:screenOrientation="landscape">
+            android:screenOrientation="landscape"
+            android:theme="@style/AppTheme.NoActionBar.Fullscreen"></activity>
+        <activity
+            android:name=".activity.IntroActivity"
+            android:theme="@style/AppTheme.NoActionBar.Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.IntroActivity"></activity>
+        <activity
+            android:name=".activity.ManualActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/AppTheme.NoActionBar.Fullscreen">
+        </activity>
     </application>
 
 </manifest>
