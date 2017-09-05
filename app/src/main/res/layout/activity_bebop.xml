@@ -125,9 +125,7 @@
         android:max="10"
         android:layout_below="@+id/startBtn"
         android:layout_alignRight="@+id/startBtn"
-        android:layout_alignEnd="@+id/startBtn"
-        android:layout_marginRight="11dp"
-        android:layout_marginEnd="11dp" />
+        android:layout_alignEnd="@+id/startBtn" />
 
     <ImageButton
         android:layout_width="34dp"
@@ -166,6 +164,18 @@
         android:width="150dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
+
+    <ImageButton
+        android:layout_width="44dp"
+        android:layout_height="40dp"
+        android:scaleType="centerCrop"
+        android:background="@android:color/transparent"
+        app:srcCompat="@drawable/if_widestart"
+        android:id="@+id/wideStartBtn"
+        android:layout_alignTop="@+id/imageView"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
 
     <ImageView
         android:id="@+id/battery_indicator"

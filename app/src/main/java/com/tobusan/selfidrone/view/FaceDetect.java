@@ -1,7 +1,6 @@
 package com.tobusan.selfidrone.view;
 
 
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -92,6 +91,8 @@ public class FaceDetect extends View {
     private ToggleButton followBtn;
     private ToggleButton smileBtn;
 
+    private Rect smileRect = null;
+
     public FaceDetect(Context context) {
         super(context);
         ctx = context;
@@ -110,7 +111,7 @@ public class FaceDetect extends View {
         paint_red.setAntiAlias(true);
         paint_red.setStyle(Paint.Style.STROKE);
         paint_red.setColor(Color.RED);
-        paint_red.setStrokeWidth(4f);
+        paint_red.setStrokeWidth(2f);
     }
 
     public FaceDetect(Context context, AttributeSet attrs) {
@@ -123,7 +124,7 @@ public class FaceDetect extends View {
         // initialize our canvas paint object
         paint_green = new Paint();
         paint_green.setAntiAlias(true);
-        paint_green.setColor(Color.GREEN);
+        paint_green.setColor(Color.parseColor("#22b3ab"));
         paint_green.setStyle(Paint.Style.STROKE);
         paint_green.setStrokeWidth(4f);
 
@@ -131,7 +132,7 @@ public class FaceDetect extends View {
         paint_red.setAntiAlias(true);
         paint_red.setStyle(Paint.Style.STROKE);
         paint_red.setColor(Color.RED);
-        paint_red.setStrokeWidth(4f);
+        paint_red.setStrokeWidth(2f);
     }
 
     public FaceDetect(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -146,7 +147,7 @@ public class FaceDetect extends View {
         // initialize our canvas paint object
         paint_green = new Paint();
         paint_green.setAntiAlias(true);
-        paint_green.setColor(Color.GREEN);
+        paint_green.setColor(Color.parseColor("#22b3ab"));
         paint_green.setStyle(Paint.Style.STROKE);
         paint_green.setStrokeWidth(4f);
 
@@ -154,7 +155,7 @@ public class FaceDetect extends View {
         paint_red.setAntiAlias(true);
         paint_red.setStyle(Paint.Style.STROKE);
         paint_red.setColor(Color.RED);
-        paint_red.setStrokeWidth(4f);
+        paint_red.setStrokeWidth(2f);
     }
 
     public void setFollow() {
@@ -279,6 +280,7 @@ public class FaceDetect extends View {
             isFirst = true;
             facesArray = null;
             smileArray = null;
+            smileRect = null;
             invalidate();
         }
 
@@ -289,7 +291,8 @@ public class FaceDetect extends View {
 
             Mat submat= new Mat();
             Mat sub_submat = new Mat();
-
+            Mat smile_submat = new Mat();
+            Mat smile_sub_submat = new Mat();
             Rect rect = new Rect();
 
             while (!interrupted) {
@@ -307,7 +310,7 @@ public class FaceDetect extends View {
                     final Size minSize = new Size(minRows, minRows);
                     final Size maxSize = new Size(0, 0);
 
-                    final Size min_smile_Size = new Size(minRows*0.1f, minRows*0.1f);
+                    final Size min_smile_Size = new Size(minRows*0.2f, minRows*0.2f);
 
                     FaceRecognition(mat);
                     FaceTrack(mat);
@@ -317,10 +320,14 @@ public class FaceDetect extends View {
                     submat = mat.submat(rect);
                     submat.assignTo(sub_submat);
 
-                    faceClassifier.detectMultiScale(sub_submat, faces, 1.25, 6, 0, minSize, maxSize);
-                    if(smileEnabled == true)
-                        smileClassifier.detectMultiScale(sub_submat, smiles, 3, 6, 0, min_smile_Size, maxSize);
+                    if(smileRect != null){
+                        smile_submat = mat.submat(smileRect);
+                        smile_submat.assignTo(smile_sub_submat);
+                    }
 
+                    faceClassifier.detectMultiScale(sub_submat, faces,1.1, 6, 0, minSize, maxSize);
+                    if(smileEnabled == true)
+                        smileClassifier.detectMultiScale(smile_sub_submat, smiles, 3 , 6 , 0, min_smile_Size,maxSize);
                     synchronized (lock) {
                         facesArray = faces.toArray();
                         mX = submat.width() / sub_submat.width();
@@ -332,12 +339,12 @@ public class FaceDetect extends View {
                             if (facesArray[0].area() != 0) {
                                 // 얼굴이 뒤로 간 경우
                                 if (mainFaceArea / facesArray[0].area() > 1.25f) {
-                                    bebopDrone.setPitch((byte) 4);
+                                    bebopDrone.setPitch((byte) 7);
                                     bebopDrone.setFlag((byte) 1);
                                 }
                                 // 얼굴이 앞으로 간 경우
                                 else if (mainFaceArea / facesArray[0].area() < 0.75f) {
-                                    bebopDrone.setPitch((byte) -4);
+                                    bebopDrone.setPitch((byte) -7);
                                     bebopDrone.setFlag((byte) 1);
                                 }
                                 else {
@@ -349,11 +356,11 @@ public class FaceDetect extends View {
                             if (Math.abs(faceCenterX - mainCenterX) > mainBoundRateX) {
                                 // 얼굴이 왼쪽에 있는 경우
                                 if (mainCenterX > faceCenterX) {
-                                    bebopDrone.setYaw((byte) -10);
+                                    bebopDrone.setYaw((byte) -15);
                                 }
                                 // 얼굴이 오른쪽에 있는 경우
                                 else
-                                    bebopDrone.setYaw((byte) 10);
+                                    bebopDrone.setYaw((byte) 15);
                             } else {
                                 bebopDrone.setYaw((byte) 0);
                             }
@@ -361,10 +368,10 @@ public class FaceDetect extends View {
                             if (Math.abs(faceCenterY - mainCenterY) > mainBoundRateY * 1.5) {
                                 // 얼굴이 위쪽에 있는 경우
                                 if (mainCenterY > faceCenterY)
-                                    bebopDrone.setGaz((byte) 10);
+                                    bebopDrone.setGaz((byte) 13);
                                     // 얼굴이 아래쪽에 있는 경우
                                 else
-                                    bebopDrone.setGaz((byte) -10);
+                                    bebopDrone.setGaz((byte) -13);
                             } else {
                                 bebopDrone.setGaz((byte) 0);
                             }
@@ -439,8 +446,13 @@ public class FaceDetect extends View {
 
                 canvas.drawRect(top_x + faceTLX, top_y + faceTLY, top_x + faceBRX, top_y + faceBRY, paint_green);
 
+                smileRect = new Rect((int)(top_x + faceTLX), (int)(top_y + faceTLY), (int)(faceBRX - faceTLX), (int)(faceBRY - faceTLY));
+
                 faceCenterX = (top_x*2 + faceTLX + faceBRX)/2;
                 faceCenterY = (top_y*2 + faceTLY + faceBRY)/2;
+
+                float smileTopX = top_x + faceTLX;
+                float smileTopY = top_y + faceTLY;
 
                 if(smileEnabled == true) {
                     for (Rect target : smileArray) {
@@ -448,11 +460,8 @@ public class FaceDetect extends View {
                         float BottomRightX = (float) target.br().x * mX;
                         float TopLeftY = (float) target.tl().y * mY;
                         float BottomRightY = (float) target.br().y * mY;
-
-                        if (faceTLX < TopLeftX && faceBRX > BottomRightX && (faceTLY + (faceBRY - faceTLY) / 2) < TopLeftY && faceBRY > BottomRightY) {
-                            canvas.drawRect(top_x + TopLeftX, top_y + TopLeftY, top_x + BottomRightX, top_y + BottomRightY, paint_red);
-                            count++;
-                        }
+                        canvas.drawRect(smileTopX + TopLeftX, smileTopY + TopLeftY, smileTopX + BottomRightX, smileTopY + BottomRightY, paint_red);
+                        count++;
                     }
                 }
             }

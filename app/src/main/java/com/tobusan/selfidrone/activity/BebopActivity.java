@@ -85,6 +85,7 @@ public class BebopActivity extends AppCompatActivity {
 
     private boolean isWide = false;
     private WideShot mWideShot;
+    private ImageButton wideStart;
 
     private  boolean isAdditional = false;
 
@@ -251,6 +252,18 @@ public class BebopActivity extends AppCompatActivity {
             }
         });
 
+        wideStart = (ImageButton)findViewById(R.id.wideStartBtn);
+        wideStart.setEnabled(false);
+        wideStart.setVisibility(View.INVISIBLE);
+        wideStart.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Toast toast = Toast.makeText(getApplicationContext(), "WideShot Start", Toast.LENGTH_LONG);
+                toast.show();
+                mWideShot.resume(mBebopDrone, beep, beepFinish);
+            }
+        });
+
         smileBtn = (ToggleButton)findViewById(R.id.smileBtn);
         smileBtn.setEnabled(false);
         smileBtn.setVisibility(View.INVISIBLE);
@@ -311,16 +324,19 @@ public class BebopActivity extends AppCompatActivity {
                 }
             }
         });
+
         mWideShotBt = (ToggleButton)findViewById(R.id.WideShot);
         mWideShotBt.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 if(isWide){
                     isWide = false;
-                    mWideShot.pause();
+                    wideStart.setVisibility(View.INVISIBLE);
+                    wideStart.setEnabled(false);
                     mWideShotBt.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_wideshot_off));
                 }else{
                     isWide = true;
-                    mWideShot.resume(mBebopDrone, beep, beepFinish);
+                    wideStart.setVisibility(View.VISIBLE);
+                    wideStart.setEnabled(true);
                     mWideShotBt.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_wideshot_on));
                 }
             }
