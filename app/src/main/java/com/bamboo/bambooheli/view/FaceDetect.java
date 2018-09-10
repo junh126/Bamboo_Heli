@@ -1,4 +1,4 @@
-package com.tobusan.selfidrone.view;
+package com.bamboo.bambooheli.view;
 
 
 import android.content.Context;
@@ -28,9 +28,9 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Locale;
 
-import com.tobusan.selfidrone.R;
-import com.tobusan.selfidrone.drone.BebopDrone;
-import com.tobusan.selfidrone.drone.Beeper;
+import com.bamboo.bambooheli.R;
+import com.bamboo.bambooheli.drone.BebopDrone;
+import com.bamboo.bambooheli.drone.Beeper;
 
 public class FaceDetect extends View {
     private final static String CLASS_NAME = FaceDetect.class.getSimpleName();

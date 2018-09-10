@@ -1,11 +1,11 @@
-package com.tobusan.selfidrone.activity;
+package com.bamboo.bambooheli.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.widget.ImageView;
 
-import com.tobusan.selfidrone.R;
+import com.bamboo.bambooheli.R;
 
 public class ManualActivity extends AppCompatActivity {
     private int count = 0;

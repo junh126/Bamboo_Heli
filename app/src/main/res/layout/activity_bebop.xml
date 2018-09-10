@@ -7,11 +7,11 @@
     tools:context=".activity.BebopActivity"
     android:id="@+id/piloting_view">
 
-    <com.tobusan.selfidrone.view.BebopVideoView
+    <com.bamboo.bambooheli.view.BebopVideoView
         android:id="@+id/videoView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
-    <com.tobusan.selfidrone.view.FaceDetect
+    <com.bamboo.bambooheli.view.FaceDetect
         android:id="@+id/faceDetect"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
@@ -23,6 +23,11 @@
         android:layout_below="@+id/seekBar"
         android:layout_alignRight="@+id/followBtn"
         android:layout_alignEnd="@+id/followBtn" />
+    <Button
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/automove"
+        />
 
     <ImageButton
         android:layout_width="45dp"

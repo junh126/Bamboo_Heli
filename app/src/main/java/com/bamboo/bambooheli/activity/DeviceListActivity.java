@@ -1,4 +1,4 @@
-package com.tobusan.selfidrone.activity;
+package com.bamboo.bambooheli.activity;
 
 import android.Manifest;
 import android.content.Intent;
@@ -27,8 +27,8 @@ import com.parrot.arsdk.ARSDK;
 import com.parrot.arsdk.ardiscovery.ARDISCOVERY_PRODUCT_ENUM;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryService;
-import com.tobusan.selfidrone.R;
-import com.tobusan.selfidrone.discovery.DroneDiscoverer;
+import com.bamboo.bambooheli.R;
+import com.bamboo.bambooheli.discovery.DroneDiscoverer;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;

@@ -1,4 +1,4 @@
-package com.tobusan.selfidrone.view;
+package com.bamboo.bambooheli.view;
 
 import android.content.Context;
 import android.graphics.Canvas;

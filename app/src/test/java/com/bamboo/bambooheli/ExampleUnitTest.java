@@ -1,4 +1,4 @@
-package com.tobusan.selfidrone;
+package com.bamboo.bambooheli;
 
 import org.junit.Test;
 

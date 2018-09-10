@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SelfiDrone</string>
+    <string name="app_name">bambooheli</string>
     <string name="wifi_disabled">Wifi is disabled.</string>
     <string name="enable">Enable</string>
     <string name="no_nearby_device">No nearby device.</string>

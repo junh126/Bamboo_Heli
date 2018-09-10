@@ -1,4 +1,4 @@
-package com.tobusan.selfidrone;
+package com.bamboo.bambooheli;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

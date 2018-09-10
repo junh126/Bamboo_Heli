@@ -1,4 +1,4 @@
-package com.tobusan.selfidrone.activity;
+package com.bamboo.bambooheli.activity;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -29,12 +29,12 @@ import com.parrot.arsdk.arcontroller.ARCONTROLLER_STREAM_CODEC_TYPE_ENUM;
 import com.parrot.arsdk.arcontroller.ARControllerCodec;
 import com.parrot.arsdk.arcontroller.ARFrame;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
-import com.tobusan.selfidrone.R;
-import com.tobusan.selfidrone.drone.BebopDrone;
-import com.tobusan.selfidrone.drone.Beeper;
-import com.tobusan.selfidrone.view.BebopVideoView;
-import com.tobusan.selfidrone.view.FaceDetect;
-import com.tobusan.selfidrone.view.WideShot;
+import com.bamboo.bambooheli.R;
+import com.bamboo.bambooheli.drone.BebopDrone;
+import com.bamboo.bambooheli.drone.Beeper;
+import com.bamboo.bambooheli.view.BebopVideoView;
+import com.bamboo.bambooheli.view.FaceDetect;
+import com.bamboo.bambooheli.view.WideShot;
 
 import java.nio.ByteBuffer;
 
@@ -425,6 +425,35 @@ public class BebopActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        findViewById(R.id.automove).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        v.setPressed(true);
+                        mBebopDrone.setPitch((byte)200);
+                        mBebopDrone.setPitch((byte)-200);
+                        mBebopDrone.setPitch((byte)200);
+                        mBebopDrone.setPitch((byte)-200);
+
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+                        v.setPressed(false);
+                        mBebopDrone.setGaz((byte) 0);
+                        break;
+
+                    default:
+
+                        break;
+                }
+
+                return true;
+            }
+        });
+
+
 
         findViewById(R.id.btn_gaz_down).setOnTouchListener(new View.OnTouchListener() {
             @Override

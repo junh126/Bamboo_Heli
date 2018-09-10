@@ -1,10 +1,10 @@
-package com.tobusan.selfidrone.view;
+package com.bamboo.bambooheli.view;
 
 
 import android.os.CountDownTimer;
 
-import com.tobusan.selfidrone.drone.BebopDrone;
-import com.tobusan.selfidrone.drone.Beeper;
+import com.bamboo.bambooheli.drone.BebopDrone;
+import com.bamboo.bambooheli.drone.Beeper;
 
 public class WideShot{
     private final static String CLASS_NAME = WideShot.class.getSimpleName();

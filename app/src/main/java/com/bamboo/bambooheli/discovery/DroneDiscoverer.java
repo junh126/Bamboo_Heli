@@ -1,4 +1,4 @@
-package com.tobusan.selfidrone.discovery;
+package com.bamboo.bambooheli.discovery;
 
 import android.content.ComponentName;
 import android.content.Context;
