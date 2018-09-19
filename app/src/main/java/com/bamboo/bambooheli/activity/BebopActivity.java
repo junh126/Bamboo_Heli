@@ -38,7 +38,10 @@ import com.bamboo.bambooheli.view.WideShot;
 
 import java.nio.ByteBuffer;
 
-public class BebopActivity extends AppCompatActivity {
+
+
+
+    public class BebopActivity extends AppCompatActivity {
     public static final int LEVEL_LAND = 1;
     public static final int LEVEL_TAKEOFF = 0;
 
@@ -88,6 +91,11 @@ public class BebopActivity extends AppCompatActivity {
     private ImageButton wideStart;
 
     private  boolean isAdditional = false;
+
+
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -717,6 +725,8 @@ public class BebopActivity extends AppCompatActivity {
         public void onDownloadProgressed(String mediaName, int progress) {
             mDownloadProgressDialog.setProgress(((mCurrentDownloadIndex - 1) * 100) + progress);
         }
+
+
 
         @Override
         public void onDownloadComplete(String mediaName) {
