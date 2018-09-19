@@ -39,6 +39,14 @@ import com.bamboo.bambooheli.view.WideShot;
 import java.nio.ByteBuffer;
 
 public class BebopActivity extends AppCompatActivity {
+
+    public native String hello_from_c();
+    static{
+
+        System.loadLibrary("native-lib");
+
+    }
+
     public static final int LEVEL_LAND = 1;
     public static final int LEVEL_TAKEOFF = 0;
 
