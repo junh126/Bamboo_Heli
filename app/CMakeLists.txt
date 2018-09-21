@@ -5,7 +5,6 @@
 
 cmake_minimum_required(VERSION 3.4.1)
 
-
 set(pathOPENCV C:/OpenCV-android-sdk)
 
 set(pathPROJECT C:/Users/wno-o/AndroidStudioProjects/hihi)
@@ -17,6 +16,7 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 
 include_directories(${pathOPENCV}/sdk/native/jni/include)
+
 
 
 # Creates and names a library, sets it as either STATIC
