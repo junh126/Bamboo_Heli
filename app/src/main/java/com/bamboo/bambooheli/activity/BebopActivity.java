@@ -40,12 +40,6 @@ import java.nio.ByteBuffer;
 
 public class BebopActivity extends AppCompatActivity {
 
-    public native String hello_from_c();
-    static{
-
-        System.loadLibrary("native-lib");
-
-    }
 
     public static final int LEVEL_LAND = 1;
     public static final int LEVEL_TAKEOFF = 0;
@@ -209,26 +203,7 @@ public class BebopActivity extends AppCompatActivity {
         followBtn = (ToggleButton)findViewById(R.id.followBtn);
         followBtn.setEnabled(false);
         followBtn.setVisibility(View.INVISIBLE);
-        followBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(isFollow){
-                    isFollow = false;
-                    mFaceDetect.resetFollow();
-                    smileBtn.setVisibility(View.INVISIBLE);
-                    followBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_follow_off));
-                    Toast toast = Toast.makeText(getApplicationContext(), "Follow off", Toast.LENGTH_LONG);
-                    toast.show();
-                }else{
-                    isFollow = true;
-                    mFaceDetect.setFollow();
-                    smileBtn.setVisibility(View.VISIBLE);
-                    followBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_follow_on));
-                    Toast toast = Toast.makeText(getApplicationContext(), "Follow on", Toast.LENGTH_LONG);
-                    toast.show();
-                }
-            }
-        });
+
 
         timer = (TextView) findViewById(R.id.TimerText);
         timer.setEnabled(false);
@@ -275,24 +250,7 @@ public class BebopActivity extends AppCompatActivity {
         smileBtn = (ToggleButton)findViewById(R.id.smileBtn);
         smileBtn.setEnabled(false);
         smileBtn.setVisibility(View.INVISIBLE);
-        smileBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(isSmile){
-                    isSmile = false;
-                    mFaceDetect.resetSmileShot();
-                    smileBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_smile_off));
-                    Toast toast = Toast.makeText(getApplicationContext(), "Smile off", Toast.LENGTH_LONG);
-                    toast.show();
-                }else{
-                    isSmile = true;
-                    mFaceDetect.setSmileShot();
-                    smileBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_smile_on));
-                    Toast toast = Toast.makeText(getApplicationContext(), "얼굴을 화면 중앙에 맞추고 찰칵 소리가 날 때까지 웃으세요!", Toast.LENGTH_LONG);
-                    toast.show();
-                }
-            }
-        });
+
 
         beep = new Beeper(this, R.raw.beep_repeat2);
         beepFinish = new Beeper(this, R.raw.beep_camera);
@@ -308,6 +266,8 @@ public class BebopActivity extends AppCompatActivity {
         mDownloadBt.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 download();
+                //Intent intent = new Intent(BebopActivity.this, Carplate.class);
+                //startActivity(intent);
             }
         });
 

@@ -1,54 +1,63 @@
 package com.bamboo.bambooheli.activity;
-
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.MotionEvent;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+
 
 import com.bamboo.bambooheli.R;
 
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
+
 public class ManualActivity extends AppCompatActivity {
-    private int count = 0;
-    private int[] idArray = {R.drawable.ic_manual_1, R.drawable.ic_manual_2, R.drawable.ic_manual_3, R.drawable.ic_manual_4, R.drawable.ic_manual_5};
+    public native void car_plate(long a1,long a2);
+    static{
+        System.loadLibrary("native-lib");
+        //System.loadLibrary("tess");
+    }
     private ImageView mImageView;
-    private float downX, upX;
-    static final int MIN_DISTANCE = 100;
+    private BitmapDrawable mdrawable;
+    private Bitmap mbitmap;
+    private Bitmap mbitmap2;
+    private Button button1;
+    private Mat img_input;
+    private Mat img_output;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manual);
+
+
+        img_input = new Mat();
+        img_output = new Mat();
+
+        mdrawable = (BitmapDrawable) getResources().getDrawable(R.drawable.test5);
+        mbitmap = mdrawable.getBitmap();
+        button1 = (Button)findViewById(R.id.button1);
         mImageView = (ImageView)findViewById(R.id.ManualView);
-    }
+        mImageView.setImageResource(R.drawable.test5);
+        button1.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mbitmap != null) {
+                    Utils.bitmapToMat(mbitmap, img_input);
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        int action = event.getAction();
-        switch(action) {
-            case MotionEvent.ACTION_DOWN :
-                downX = event.getX();
-                break;
-            case MotionEvent.ACTION_UP :
-                upX = event.getX();
-                float deltaX = upX - downX;
-                if(Math.abs(deltaX) > MIN_DISTANCE){
-                    if(deltaX < 0){
-                        if(count  < idArray.length - 1) mImageView.setImageResource(idArray[++count]);
-                        else{
-                            finish();
-                        }
-                    }else if(deltaX > 0){
-                        if(count > 0) mImageView.setImageResource(idArray[--count]);
-                        else{
-                            finish();
-                        }
-                    }
+                    car_plate(img_input.getNativeObjAddr(), img_output.getNativeObjAddr());
+
+                    mbitmap2 = Bitmap.createBitmap(img_output.cols(), img_output.rows(), Bitmap.Config.ARGB_8888);
+                    Log.i("imgoutput는 아무 죄가 없다 : " ,img_output.dump());
+
+                    Utils.matToBitmap(img_output, mbitmap2);
+                    mImageView.setImageBitmap(mbitmap2);
+
                 }
-                break;
-            case MotionEvent.ACTION_MOVE :
-                break;
-        }
-
-        return super.onTouchEvent(event);
-
+            }
+        });
     }
 }

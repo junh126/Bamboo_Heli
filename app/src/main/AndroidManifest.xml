@@ -3,6 +3,7 @@
     package="com.bamboo.bambooheli">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
@@ -19,7 +20,11 @@
         <activity
             android:name=".activity.DeviceListActivity"
             android:screenOrientation="landscape"
-            android:theme="@style/AppTheme.NoActionBar.Fullscreen"></activity>
+            android:theme="@style/AppTheme.NoActionBar.Fullscreen" />
+        <activity android:name=".activity.Carplate"
+            android:screenOrientation="landscape"
+            android:theme="@style/AppTheme.NoActionBar.Fullscreen"
+            />
         <activity
             android:name=".activity.IntroActivity"
             android:theme="@style/AppTheme.NoActionBar.Fullscreen">
@@ -32,8 +37,8 @@
         <activity
             android:name=".activity.ManualActivity"
             android:screenOrientation="landscape"
-            android:theme="@style/AppTheme.NoActionBar.Fullscreen">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar.Fullscreen"></activity>
+
     </application>
 
 </manifest>
