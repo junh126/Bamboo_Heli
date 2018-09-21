@@ -281,6 +281,6 @@ Java_com_bamboo_bambooheli_activity_ManualActivity_car_1plate(JNIEnv *env, jobje
     rectangle(image3, boundRect2[select].tl(), boundRect2[select].br(), Scalar(0, 0, 255), 2, 8, 0);
     line(image3, boundRect2[select].tl(), Point(boundRect2[select].tl().x + plate_width, boundRect2[select].tl().y), Scalar(0, 0, 255), 1, 8, 0);
 
-    image(Rect(boundRect2[select].tl().x - 20, boundRect2[select].tl().y - 20, plate_width + 40, plate_width*0.3)).copyTo(resimage);
+    image(Rect(boundRect2[select].tl().x-20, boundRect2[select].tl().y-20, plate_width+40, plate_width*0.3)).copyTo(resimage);
 
 }

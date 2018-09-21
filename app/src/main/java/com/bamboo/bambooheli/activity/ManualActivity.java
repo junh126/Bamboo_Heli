@@ -37,11 +37,11 @@ public class ManualActivity extends AppCompatActivity {
         img_input = new Mat();
         img_output = new Mat();
 
-        mdrawable = (BitmapDrawable) getResources().getDrawable(R.drawable.test5);
+        mdrawable = (BitmapDrawable) getResources().getDrawable(R.drawable.test1);
         mbitmap = mdrawable.getBitmap();
         button1 = (Button)findViewById(R.id.button1);
         mImageView = (ImageView)findViewById(R.id.ManualView);
-        mImageView.setImageResource(R.drawable.test5);
+        mImageView.setImageResource(R.drawable.test1);
         button1.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View view) {
