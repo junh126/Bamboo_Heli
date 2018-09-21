@@ -1,54 +1,51 @@
 package com.bamboo.bambooheli.activity;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+
 
 import com.bamboo.bambooheli.R;
 
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
+
 public class ManualActivity extends AppCompatActivity {
-    private int count = 0;
-    private int[] idArray = {R.drawable.ic_manual_1, R.drawable.ic_manual_2, R.drawable.ic_manual_3, R.drawable.ic_manual_4, R.drawable.ic_manual_5};
+
     private ImageView mImageView;
-    private float downX, upX;
-    static final int MIN_DISTANCE = 100;
+    private BitmapDrawable mdrawable;
+    private Bitmap mbitmap;
+    private Button button1;
+    private Mat img_input;
+    private Mat img_output;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manual);
+
+
+        img_input = new Mat();
+        img_output = new Mat();
+        mdrawable = (BitmapDrawable) getResources().getDrawable(R.drawable.test1);
+        mbitmap = mdrawable.getBitmap();
+        button1 = (Button)findViewById(R.id.button1);
         mImageView = (ImageView)findViewById(R.id.ManualView);
-    }
+        mImageView.setImageResource(R.drawable.test1);
+        button1.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Utils.bitmapToMat(mbitmap, img_input);
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        int action = event.getAction();
-        switch(action) {
-            case MotionEvent.ACTION_DOWN :
-                downX = event.getX();
-                break;
-            case MotionEvent.ACTION_UP :
-                upX = event.getX();
-                float deltaX = upX - downX;
-                if(Math.abs(deltaX) > MIN_DISTANCE){
-                    if(deltaX < 0){
-                        if(count  < idArray.length - 1) mImageView.setImageResource(idArray[++count]);
-                        else{
-                            finish();
-                        }
-                    }else if(deltaX > 0){
-                        if(count > 0) mImageView.setImageResource(idArray[--count]);
-                        else{
-                            finish();
-                        }
-                    }
-                }
-                break;
-            case MotionEvent.ACTION_MOVE :
-                break;
-        }
-
-        return super.onTouchEvent(event);
-
+                // catchCarPlate(img_input.getNativeObjAddr(), img_output.getNativeObjAddr());
+                // C++ 로 넘어갑시다.
+                Utils.matToBitmap(img_output, mbitmap);
+                mImageView.setImageBitmap(mbitmap);
+            }
+        });
     }
 }

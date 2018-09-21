@@ -36,17 +36,26 @@ import com.bamboo.bambooheli.view.BebopVideoView;
 import com.bamboo.bambooheli.view.FaceDetect;
 import com.bamboo.bambooheli.view.WideShot;
 
+import org.opencv.core.Mat;
+
 import java.nio.ByteBuffer;
 
 public class BebopActivity extends AppCompatActivity {
 
-    public native String hello_from_c();
+   // public native String hello_from_c();
+   // static{
+
+   //     System.loadLibrary("native-lib");
+    // }
+
+
+
     static{
-
         System.loadLibrary("native-lib");
-
+        System.loadLibrary("jpgt");
+        System.loadLibrary("lept");
+        System.loadLibrary("tess");
     }
-
     public static final int LEVEL_LAND = 1;
     public static final int LEVEL_TAKEOFF = 0;
 
@@ -110,6 +119,7 @@ public class BebopActivity extends AppCompatActivity {
         mBebopDrone.addListener(mBebopListener);
 
     }
+
 
     @Override
     protected void onStart() {
