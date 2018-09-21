@@ -195,6 +195,8 @@ Java_com_bamboo_bambooheli_activity_ManualActivity_car_1plate(JNIEnv *env, jobje
     vector<Rect> boundRect(contours.size());
     vector<Rect> boundRect2(contours.size());
 
+    //resimage = image2;
+
     //  Bind rectangle to every rectangle.
     for (int i = 0; i< contours.size(); i++) {
         approxPolyDP(Mat(contours[i]), contours_poly[i], 1, true);
@@ -208,7 +210,7 @@ Java_com_bamboo_bambooheli_activity_ManualActivity_car_1plate(JNIEnv *env, jobje
         ratio = (double)boundRect[i].height / boundRect[i].width;
 
         //  Filtering rectangles height/width ratio, and size.
-        if ((ratio <= 2.5) && (ratio >= 0.5) && (boundRect[i].area() <= 700) && (boundRect[i].area() >= 100)) {
+        if ((ratio <= 2.5) && (ratio >= 0.5) && (boundRect[i].area() <= 3000) && (boundRect[i].area() >= 1000)) {
 
             drawContours(drawing, contours, i, Scalar(0, 255, 255), 1, 8, hierarchy, 0, Point());
             rectangle(drawing, boundRect[i].tl(), boundRect[i].br(), Scalar(255, 0, 0), 1, 8, 0);
@@ -220,6 +222,8 @@ Java_com_bamboo_bambooheli_activity_ManualActivity_car_1plate(JNIEnv *env, jobje
     }
 
     boundRect2.resize(refinery_count);  //  Resize refinery rectangle array.
+
+    //resimage = drawing;
 
     //  Bubble Sort accordance with X-coordinate.
     for (int i = 0; i<boundRect2.size(); i++) {
@@ -244,7 +248,7 @@ Java_com_bamboo_bambooheli_activity_ManualActivity_car_1plate(JNIEnv *env, jobje
 
             delta_x = abs(boundRect2[j].tl().x - boundRect2[i].tl().x);
 
-            if (delta_x > 150)  //  Can't eat snake friend too far ^-^.
+            if (delta_x > 300)  //  Can't eat snake friend too far ^-^.
                 break;
 
             delta_y = abs(boundRect2[j].tl().y - boundRect2[i].tl().y);
@@ -261,9 +265,9 @@ Java_com_bamboo_bambooheli_activity_ManualActivity_car_1plate(JNIEnv *env, jobje
 
 
             gradient = delta_y / delta_x;  //  Get gradient.
-            cout << gradient << endl;
+            //cout << gradient << endl;
 
-            if (gradient < 0.25) {  //  Can eat friends only on straight line.
+            if (gradient < 0.3) {  //  Can eat friends only on straight line.
                 count += 1;
             }
         }
@@ -279,8 +283,10 @@ Java_com_bamboo_bambooheli_activity_ManualActivity_car_1plate(JNIEnv *env, jobje
 
     //  Drawing most full snake friend on the image.
     rectangle(image3, boundRect2[select].tl(), boundRect2[select].br(), Scalar(0, 0, 255), 2, 8, 0);
+
     line(image3, boundRect2[select].tl(), Point(boundRect2[select].tl().x + plate_width, boundRect2[select].tl().y), Scalar(0, 0, 255), 1, 8, 0);
 
+    //resimage = image3;
     image(Rect(boundRect2[select].tl().x - 20, boundRect2[select].tl().y - 20, plate_width + 40, plate_width*0.3)).copyTo(resimage);
 
 }
