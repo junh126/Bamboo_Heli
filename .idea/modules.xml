@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/bamboo.iml" filepath="$PROJECT_DIR$/bamboo.iml" />
       <module fileurl="file://$PROJECT_DIR$/openCVLibrary320/openCVLibrary320.iml" filepath="$PROJECT_DIR$/openCVLibrary320/openCVLibrary320.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tess-two/tess-two.iml" filepath="$PROJECT_DIR$/tess-two/tess-two.iml" />
     </modules>
   </component>
 </project>
