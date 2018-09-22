@@ -71,20 +71,27 @@ public class ManualActivity extends AppCompatActivity {
     private File imgFile;
     private Bitmap mbitmap2;
     private Button button1;
+    private Button next_button;
     private Mat img_input;
     private Mat img_output;
     private Uri uri;
     private TessBaseAPI mTess;
+    private String[] imgList;
+    private int count1;
     String datapath = "";
+    String path;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manual);
+
+        count1 = 0;
+
         mImageView = (ImageView)findViewById(R.id.ManualView);
 
         //Path 찾는 작업
-        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator
+        path = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator
                 + "ARSDKMedias" + File.separator;
         //Toast.makeText(getApplicationContext(),"Accessing",Toast.LENGTH_SHORT).show();
         if(!isExternalStorageReadable()){
@@ -92,7 +99,7 @@ public class ManualActivity extends AppCompatActivity {
             return;
         }
         File list1 = new File(path);
-        String[] imgList = list1.list(new FilenameFilter() {
+        imgList = list1.list(new FilenameFilter() {
             public boolean accept(File dir, String filename) {
                 boolean bOK = false;
                 if(filename.toLowerCase().endsWith(".jpg")) bOK = true;
@@ -102,7 +109,7 @@ public class ManualActivity extends AppCompatActivity {
         });
         if(imgList != null){
             //path + imgList[0];
-            imgFile = new File(path + imgList[1]);
+            imgFile = new File(path + imgList[0]);
             //uri = Uri.parse(path + imgList[0]);
             Toast.makeText(getApplicationContext(),"path : " + path + imgList[0],Toast.LENGTH_LONG).show();
             //mImageView.setImageURI(uri);
@@ -117,7 +124,7 @@ public class ManualActivity extends AppCompatActivity {
 
         //mdrawable = (BitmapDrawable) getResources().getDrawable(R.drawable.test2);
 
-        button1 = (Button)findViewById(R.id.button1);
+
 
         if(imgFile.exists()){
             mbitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
@@ -127,7 +134,29 @@ public class ManualActivity extends AppCompatActivity {
             mImageView.setImageBitmap(mbitmap);
         }
 
+        next_button = (Button) findViewById(R.id.next_button);
+        next_button.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                count1++;
+                if(imgList.length > count1){
+                    imgFile =  new File(path + imgList[count1]);
+                    Toast.makeText(getApplicationContext(),"path : " + path + imgList[count1],Toast.LENGTH_LONG).show();
+                    if(imgFile.exists()){
+                        mbitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                        mbitmap = imgRotate(mbitmap);
+                        mbitmap = Bitmap.createBitmap(mbitmap,1024,825,2048,1500);
 
+                        mImageView.setImageBitmap(mbitmap);
+                    }
+                }
+                else{
+                    Toast.makeText(getApplicationContext(),"다음 이미지가 없습니다.",Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        button1 = (Button)findViewById(R.id.button1);
         button1.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View view) {
