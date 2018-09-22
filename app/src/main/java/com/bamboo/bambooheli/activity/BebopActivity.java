@@ -63,7 +63,7 @@ public class BebopActivity extends AppCompatActivity {
 
     private ImageButton mDownloadBt;
 
-    private ImageView mBatteryIndicator;
+    private TextView mBatteryIndicator;
 
     private ByteBuffer mSpsBuffer;
     private ByteBuffer mPpsBuffer;
@@ -198,18 +198,18 @@ public class BebopActivity extends AppCompatActivity {
 
         mWideShot = new WideShot();
 
-        mBatteryIndicator = (ImageView) findViewById(R.id.battery_indicator);
+        mBatteryIndicator = (TextView) findViewById(R.id.battery_indicator);
 
-        followBtn = (ToggleButton)findViewById(R.id.followBtn);
+        //followBtn = (ToggleButton)findViewById(R.id.followBtn);
         followBtn.setEnabled(false);
         followBtn.setVisibility(View.INVISIBLE);
 
 
-        timer = (TextView) findViewById(R.id.TimerText);
+        //timer = (TextView) findViewById(R.id.TimerText);
         timer.setEnabled(false);
         timer.setVisibility(View.INVISIBLE);
 
-        seekBar = (SeekBar)findViewById(R.id.seekBar);
+        //seekBar = (SeekBar)findViewById(R.id.seekBar);
         seekBar.setEnabled(false);
         seekBar.setVisibility(View.INVISIBLE);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -225,7 +225,7 @@ public class BebopActivity extends AppCompatActivity {
             }
         });
 
-        startBtn = (ImageButton)findViewById(R.id.startBtn);
+        //startBtn = (ImageButton)findViewById(R.id.startBtn);
         startBtn.setEnabled(false);
         startBtn.setVisibility(View.INVISIBLE);
         startBtn.setOnClickListener(new View.OnClickListener(){
@@ -235,7 +235,7 @@ public class BebopActivity extends AppCompatActivity {
             }
         });
 
-        wideStart = (ImageButton)findViewById(R.id.wideStartBtn);
+        //wideStart = (ImageButton)findViewById(R.id.wideStartBtn);
         wideStart.setEnabled(false);
         wideStart.setVisibility(View.INVISIBLE);
         wideStart.setOnClickListener(new View.OnClickListener(){
@@ -247,7 +247,7 @@ public class BebopActivity extends AppCompatActivity {
             }
         });
 
-        smileBtn = (ToggleButton)findViewById(R.id.smileBtn);
+        //smileBtn = (ToggleButton)findViewById(R.id.smileBtn);
         smileBtn.setEnabled(false);
         smileBtn.setVisibility(View.INVISIBLE);
 
@@ -255,11 +255,11 @@ public class BebopActivity extends AppCompatActivity {
         beep = new Beeper(this, R.raw.beep_repeat2);
         beepFinish = new Beeper(this, R.raw.beep_camera);
 
-        findViewById(R.id.emergencyBt).setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                mBebopDrone.emergency();
-            }
-        });
+//        findViewById(R.id.emergencyBt).setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View v) {
+//                mBebopDrone.emergency();
+//            }
+//        });
 
         mDownloadBt = (ImageButton)findViewById(R.id.downloadBt);
         mDownloadBt.setEnabled(true);
@@ -271,7 +271,7 @@ public class BebopActivity extends AppCompatActivity {
             }
         });
 
-        mAddtionalItems = (GridLayout)findViewById(R.id.additionalMenuItems);
+//        mAddtionalItems = (GridLayout)findViewById(R.id.additionalMenuItems);
         mAddtionalItems.setEnabled(false);
         mAddtionalItems.setVisibility(View.INVISIBLE);
 
@@ -394,32 +394,32 @@ public class BebopActivity extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.automove).setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        v.setPressed(true);
-                        mBebopDrone.setPitch((byte)200);
-                        mBebopDrone.setPitch((byte)-200);
-                        mBebopDrone.setPitch((byte)200);
-                        mBebopDrone.setPitch((byte)-200);
-
-                        break;
-
-                    case MotionEvent.ACTION_UP:
-                        v.setPressed(false);
-                        mBebopDrone.setGaz((byte) 0);
-                        break;
-
-                    default:
-
-                        break;
-                }
-
-                return true;
-            }
-        });
+//        findViewById(R.id.automove).setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                switch (event.getAction()) {
+//                    case MotionEvent.ACTION_DOWN:
+//                        v.setPressed(true);
+//                        mBebopDrone.setPitch((byte)200);
+//                        mBebopDrone.setPitch((byte)-200);
+//                        mBebopDrone.setPitch((byte)200);
+//                        mBebopDrone.setPitch((byte)-200);
+//
+//                        break;
+//
+//                    case MotionEvent.ACTION_UP:
+//                        v.setPressed(false);
+//                        mBebopDrone.setGaz((byte) 0);
+//                        break;
+//
+//                    default:
+//
+//                        break;
+//                }
+//
+//                return true;
+//            }
+//        });
 
 
 
@@ -615,7 +615,8 @@ public class BebopActivity extends AppCompatActivity {
 
         @Override
         public void onBatteryChargeChanged(int batteryPercentage) {
-            mBatteryIndicator.setImageLevel(batteryPercentage);
+            mBatteryIndicator.setText(batteryPercentage);
+
         }
 
         @Override
