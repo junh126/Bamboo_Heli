@@ -266,7 +266,7 @@ public class BebopActivity extends AppCompatActivity {
         mDownloadBt.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 download();
-                //Intent intent = new Intent(BebopActivity.this, Carplate.class);
+                //Intent intent = new Intent(BebopActivity.this, ManualActivity.class);
                 //startActivity(intent);
             }
         });
@@ -337,15 +337,18 @@ public class BebopActivity extends AppCompatActivity {
         mAdditionalBt = (ImageButton)findViewById(R.id.additionalMenu);
         mAdditionalBt.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                if(isAdditional){
-                    isAdditional = false;
-                    mAddtionalItems.setEnabled(false);
-                    mAddtionalItems.setVisibility(View.INVISIBLE);
-                }else{
-                    isAdditional = true;
-                    mAddtionalItems.setEnabled(true);
-                    mAddtionalItems.setVisibility(View.VISIBLE);
-                }
+//                if(isAdditional){
+//                    isAdditional = false;
+//                    mAddtionalItems.setEnabled(false);
+//                    mAddtionalItems.setVisibility(View.INVISIBLE);
+//                }else{
+//                    isAdditional = true;
+//                    mAddtionalItems.setEnabled(true);
+//                    mAddtionalItems.setVisibility(View.VISIBLE);
+//                }
+
+                    Intent intent = new Intent(BebopActivity.this, ManualActivity.class);
+                    startActivity(intent);
             }
         });
 
