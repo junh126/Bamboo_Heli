@@ -295,6 +295,9 @@ public class BebopActivity extends AppCompatActivity {
                             mynum++;
                             if(mynum == 3) {
                                 timer.cancel();
+                                mBebopDrone.setPitch((byte) 0);
+                                mBebopDrone.setFlag((byte) 0);
+                                return;
                             }
                             try {
                                 Thread.sleep(1000);
