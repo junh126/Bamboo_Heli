@@ -159,7 +159,7 @@ Java_com_bamboo_bambooheli_activity_Carplate_car_1plate(JNIEnv *env, jobject ins
     line(image3, boundRect2[select].tl(), Point(boundRect2[select].tl().x + plate_width, boundRect2[select].tl().y), Scalar(0, 0, 255), 1, 8, 0);
 
     //imwrite("/home/song/Downloads/license_plate/Plates/number/1-1.JPG",
-      //         image(Rect(boundRect2[select].tl().x-20, boundRect2[select].tl().y-20, plate_width+40, plate_width*0.3)));
+    //         image(Rect(boundRect2[select].tl().x-20, boundRect2[select].tl().y-20, plate_width+40, plate_width*0.3)));
 
 
 }
@@ -185,9 +185,7 @@ Java_com_bamboo_bambooheli_activity_ManualActivity_car_1plate(JNIEnv *env, jobje
 
     cvtColor(image2, image2, CV_BGR2GRAY);  //  Convert to gray image.
 
-
     Canny(image2, image2, 100, 300, 3);  //  Getting edges by Canny algorithm.
-
 
     //  Finding contours.
     findContours(image2, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point());
@@ -210,7 +208,7 @@ Java_com_bamboo_bambooheli_activity_ManualActivity_car_1plate(JNIEnv *env, jobje
         ratio = (double)boundRect[i].height / boundRect[i].width;
 
         //  Filtering rectangles height/width ratio, and size.
-        if ((ratio <= 2.5) && (ratio >= 0.5) && (boundRect[i].area() <= 3000) && (boundRect[i].area() >= 1000)) {
+        if ((ratio <= 2.5) && (ratio >= 0.5) && (boundRect[i].area() <= 500) && (boundRect[i].area() >= 100)) {
 
             drawContours(drawing, contours, i, Scalar(0, 255, 255), 1, 8, hierarchy, 0, Point());
             rectangle(drawing, boundRect[i].tl(), boundRect[i].br(), Scalar(255, 0, 0), 1, 8, 0);
@@ -223,7 +221,7 @@ Java_com_bamboo_bambooheli_activity_ManualActivity_car_1plate(JNIEnv *env, jobje
 
     boundRect2.resize(refinery_count);  //  Resize refinery rectangle array.
 
-    //resimage = drawing;
+//    resimage = drawing;
 
     //  Bubble Sort accordance with X-coordinate.
     for (int i = 0; i<boundRect2.size(); i++) {
@@ -248,7 +246,7 @@ Java_com_bamboo_bambooheli_activity_ManualActivity_car_1plate(JNIEnv *env, jobje
 
             delta_x = abs(boundRect2[j].tl().x - boundRect2[i].tl().x);
 
-            if (delta_x > 300)  //  Can't eat snake friend too far ^-^.
+            if (delta_x > 100)  //  Can't eat snake friend too far ^-^.
                 break;
 
             delta_y = abs(boundRect2[j].tl().y - boundRect2[i].tl().y);
@@ -265,9 +263,8 @@ Java_com_bamboo_bambooheli_activity_ManualActivity_car_1plate(JNIEnv *env, jobje
 
 
             gradient = delta_y / delta_x;  //  Get gradient.
-            //cout << gradient << endl;
 
-            if (gradient < 0.3) {  //  Can eat friends only on straight line.
+            if (gradient < 0.2) {  //  Can eat friends only on straight line.
                 count += 1;
             }
         }
@@ -279,14 +276,22 @@ Java_com_bamboo_bambooheli_activity_ManualActivity_car_1plate(JNIEnv *env, jobje
             rectangle(image3, boundRect2[select].tl(), boundRect2[select].br(), Scalar(255, 0, 0), 1, 8, 0);
             plate_width = delta_x;  //  Save the last friend ate position.
         }                           //  It's similar to license plate width, Right?
+
     }
+
+//    resimage = drawing;
+
 
     //  Drawing most full snake friend on the image.
     rectangle(image3, boundRect2[select].tl(), boundRect2[select].br(), Scalar(0, 0, 255), 2, 8, 0);
 
     line(image3, boundRect2[select].tl(), Point(boundRect2[select].tl().x + plate_width, boundRect2[select].tl().y), Scalar(0, 0, 255), 1, 8, 0);
 
-    //resimage = image3;
-    image(Rect(boundRect2[select].tl().x - 20, boundRect2[select].tl().y - 20, plate_width + 40, plate_width*0.3)).copyTo(resimage);
-
+//    resimage = image3;
+    if(boundRect2[select].tl().x - 20 < 0 ||  boundRect2[select].tl().y - 10 < 0){
+        image(Rect(boundRect2[select].tl().x, boundRect2[select].tl().y, plate_width + 40, plate_width*0.35)).copyTo(resimage);
+    }
+    else {
+        image(Rect(boundRect2[select].tl().x - 20, boundRect2[select].tl().y - 10, plate_width + 40, plate_width * 0.35)).copyTo(resimage);
+    }
 }

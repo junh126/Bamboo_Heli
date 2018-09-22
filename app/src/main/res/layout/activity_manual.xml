@@ -25,4 +25,12 @@
         android:layout_marginRight="37dp"
         android:text="Button" />
 
+    <Button
+        android:id="@+id/next_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignTop="@+id/button1"
+        android:text="Next" />
+
 </RelativeLayout>

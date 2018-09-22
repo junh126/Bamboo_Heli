@@ -17,7 +17,7 @@ public class IntroActivity extends AppCompatActivity {
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             public void run() {
-                Intent intent = new Intent(IntroActivity.this, ManualActivity.class);
+                Intent intent = new Intent(IntroActivity.this, DeviceListActivity.class);
                 startActivity(intent);
                 finish();
             }
