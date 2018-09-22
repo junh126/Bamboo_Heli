@@ -139,19 +139,24 @@ public class ManualActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 count1++;
-                if(imgList.length > count1){
-                    imgFile =  new File(path + imgList[count1]);
-                    Toast.makeText(getApplicationContext(),"path : " + path + imgList[count1],Toast.LENGTH_LONG).show();
-                    if(imgFile.exists()){
-                        mbitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-                        mbitmap = imgRotate(mbitmap);
-                        mbitmap = Bitmap.createBitmap(mbitmap,1024,825,2048,1500);
+                if(imgList != null){
+                    if(imgList.length > count1){
+                        imgFile =  new File(path + imgList[count1]);
+                        Toast.makeText(getApplicationContext(),"path : " + path + imgList[count1],Toast.LENGTH_LONG).show();
+                        if(imgFile.exists()){
+                            mbitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                            mbitmap = imgRotate(mbitmap);
+                            mbitmap = Bitmap.createBitmap(mbitmap,1024,825,2048,1500);
 
-                        mImageView.setImageBitmap(mbitmap);
+                            mImageView.setImageBitmap(mbitmap);
+                        }
+                    }
+                    else{
+                        Toast.makeText(getApplicationContext(),"다음 이미지가 없습니다.",Toast.LENGTH_LONG).show();
                     }
                 }
                 else{
-                    Toast.makeText(getApplicationContext(),"다음 이미지가 없습니다.",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(),"imgList is empty",Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -162,9 +167,13 @@ public class ManualActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (mbitmap != null) {
                     Utils.bitmapToMat(mbitmap, img_input);
-
+                    Log.i("ㅇㅇ2" ,"2번");
                     car_plate(img_input.getNativeObjAddr(), img_output.getNativeObjAddr());
-
+                    Log.i("ㅇㅇ1" ,"1번");
+                    if(img_output.empty()){
+                        Toast.makeText(getApplicationContext(),"cpp 검출을 못했습니다.",Toast.LENGTH_LONG).show();
+                        return;
+                    }
                     mbitmap2 = Bitmap.createBitmap(img_output.cols(), img_output.rows(), Bitmap.Config.ARGB_8888);
                     //Log.i("imgoutput는 아무 죄가 없다 : " ,img_output.dump());
 
@@ -180,10 +189,30 @@ public class ManualActivity extends AppCompatActivity {
                     mTess = new TessBaseAPI();
                     mTess.init(datapath, lang);
 
-                    String OCRresult = null;
+                    String temp = null;
+                    String OCRresult = "invalid car number";
+                    String Carnum = "invalid car number";
                     mTess.setImage(mbitmap2);
-                    OCRresult = mTess.getUTF8Text();
-                    button1.setText(OCRresult);
+                    temp = mTess.getUTF8Text();
+                    char[] c = temp.toCharArray();
+                    if(c != null){
+                        for(int i = 0;i <= c.length - 4 ; i++){
+                            if( (c[i] >= 48) && (c[i] <= 57 ) &&
+                                    (c[i+1] >= 48) && (c[i+1] <= 57 ) &&
+                                    (c[i+2] >= 48) && (c[i+2] <= 57 ) &&
+                                    (c[i+3] >= 48) && (c[i+3] <= 57 )  )
+                            {
+                                char[] tmp1 = {c[i],c[i+1],c[i+2],c[i+3]};
+                                char[] tmp2 = {c[i],c[i+1],c[i+2],c[i+3]};
+                                OCRresult = new String(tmp1);
+                                Carnum = new String(tmp2);
+                                break;
+                            }
+                        }
+                    }
+                    //button1.setText("ascii 48~ 57 : " + 48 +" " + 49 +" " + 50 +" " + 51 +" " + 52);
+                    button1.setText("temp : " + temp + "\r\n" + "char[] c.length " + String.valueOf(c.length) + "\r\n" +
+                            "OCRresult : "+ OCRresult + "\r\n" + "carnum : " + Carnum);
                 }
             }
         });

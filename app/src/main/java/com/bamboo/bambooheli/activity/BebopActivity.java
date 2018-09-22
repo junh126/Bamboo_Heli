@@ -37,6 +37,8 @@ import com.bamboo.bambooheli.view.FaceDetect;
 import com.bamboo.bambooheli.view.WideShot;
 
 import java.nio.ByteBuffer;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class BebopActivity extends AppCompatActivity {
 
@@ -72,6 +74,7 @@ public class BebopActivity extends AppCompatActivity {
     private boolean isDetect = false;
     private boolean isFollow = false;
     private boolean isSmile = false;
+    private int mynum = 0;
 
     // variable for timer
     private boolean isTimerMode = false;
@@ -275,20 +278,44 @@ public class BebopActivity extends AppCompatActivity {
         mAddtionalItems.setEnabled(false);
         mAddtionalItems.setVisibility(View.INVISIBLE);
 
+
+        mDetectBt = (ToggleButton)findViewById(R.id.Detect);
         mDetectBt = (ToggleButton)findViewById(R.id.Detect);
         mDetectBt.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                if(isDetect){ // 얼굴인식을 안할때 즉, unfollow일때
+                if(isDetect) {
                     isDetect = false;
-                    mFaceDetect.pause();
-                    mDetectBt.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_detect_off));
-                    isFollow = false;
-                    followBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_follow_off));
-                    smileBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_smile_off));
-                }else{
+                    mynum = 0;
+                    final Timer timer = new Timer(true);
+                    TimerTask t1 = new TimerTask() {
+                        @Override
+                        public void run() {
+                            mBebopDrone.setPitch((byte) 0);
+                            mBebopDrone.setFlag((byte) 0);
+                            mynum++;
+                            if(mynum == 3) {
+                                timer.cancel();
+                            }
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            mBebopDrone.setPitch((byte) 50);
+                            mBebopDrone.setFlag((byte) 1);
+                        }
+                        @Override
+                        public boolean cancel() {
+                            return super.cancel();
+                        }
+                    };
+                    timer.schedule(t1, 0, 3000);
+                }
+                else {
                     isDetect = true;
-                    mFaceDetect.resume(mVideoView, mImageView, mBebopDrone, followBtn, smileBtn, beepFinish);
                     mDetectBt.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_detect_on));
+                    mBebopDrone.setPitch((byte) 0);
+                    mBebopDrone.setFlag((byte) 0);
                 }
             }
         });
@@ -337,18 +364,16 @@ public class BebopActivity extends AppCompatActivity {
         mAdditionalBt = (ImageButton)findViewById(R.id.additionalMenu);
         mAdditionalBt.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-//                if(isAdditional){
-//                    isAdditional = false;
-//                    mAddtionalItems.setEnabled(false);
-//                    mAddtionalItems.setVisibility(View.INVISIBLE);
-//                }else{
-//                    isAdditional = true;
-//                    mAddtionalItems.setEnabled(true);
-//                    mAddtionalItems.setVisibility(View.VISIBLE);
-//                }
+                if(isAdditional){
+                    isAdditional = false;
+                    mAddtionalItems.setEnabled(false);
+                    mAddtionalItems.setVisibility(View.INVISIBLE);
+                }else{
+                    isAdditional = true;
+                    mAddtionalItems.setEnabled(true);
+                    mAddtionalItems.setVisibility(View.VISIBLE);
+                }
 
-                    Intent intent = new Intent(BebopActivity.this, ManualActivity.class);
-                    startActivity(intent);
             }
         });
 
