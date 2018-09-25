@@ -11,10 +11,10 @@
         android:id="@+id/videoView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
-    <!--<com.bamboo.bambooheli.view.FaceDetect-->
-        <!--android:id="@+id/faceDetect"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"/>-->
+    <com.bamboo.bambooheli.view.FaceDetect
+        android:id="@+id/faceDetect"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
     <ImageView
         android:layout_width="match_parent"
@@ -34,7 +34,7 @@
         android:scaleType="centerCrop"
         android:background="@android:color/transparent"
         app:srcCompat="@drawable/automove"
-        android:id="@+id/additionalMenu"
+        android:id="@+id/automove"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
@@ -317,7 +317,15 @@
         app:srcCompat="@drawable/ic_move_back_24dp"
         android:tint="#000000"
         />
+    <ImageButton
+        android:id="@+id/btn_result"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:background="@drawable/result"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
 
+        />
 
 
 </RelativeLayout>

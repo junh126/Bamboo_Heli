@@ -59,7 +59,7 @@ public class DeviceListActivity extends AppCompatActivity {
     private final List<ARDiscoveryDeviceService> mDronesList = new ArrayList<>();
     private ImageView mEmptyView;
     private ImageView mConnectView;
-    private Button mManualBt;
+//    private Button mManualBt;
     // this block loads the native libraries
     // it is mandatory
     static {
@@ -101,13 +101,13 @@ public class DeviceListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_device_list);
         final ListView listView = (ListView) findViewById(R.id.list);
-        mManualBt = (Button)findViewById(R.id.Manual);
-        mManualBt.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-                Intent intent = new Intent(DeviceListActivity.this, ManualActivity.class);
-                startActivity(intent);
-            }
-        });
+//        mManualBt = (Button)findViewById(R.id.Manual);
+//        mManualBt.setOnClickListener(new View.OnClickListener(){
+//            public void onClick(View v){
+//                Intent intent = new Intent(DeviceListActivity.this, ManualActivity.class);
+//                startActivity(intent);
+//            }
+//        });
         // Assign adapter to ListView
         listView.setAdapter(mAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener()

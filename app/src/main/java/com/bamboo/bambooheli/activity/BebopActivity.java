@@ -4,8 +4,14 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Environment;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.PopupMenu;
@@ -22,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.googlecode.tesseract.android.TessBaseAPI;
 import com.parrot.arsdk.arcommands.ARCOMMANDS_ARDRONE3_MEDIARECORDEVENT_PICTUREEVENTCHANGED_ERROR_ENUM;
 import com.parrot.arsdk.arcommands.ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM;
 import com.parrot.arsdk.arcontroller.ARCONTROLLER_DEVICE_STATE_ENUM;
@@ -36,6 +43,16 @@ import com.bamboo.bambooheli.view.BebopVideoView;
 import com.bamboo.bambooheli.view.FaceDetect;
 import com.bamboo.bambooheli.view.WideShot;
 
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -59,7 +76,7 @@ public class BebopActivity extends AppCompatActivity {
     private ImageButton mTakeOffLandBt;
     private ImageButton mAdditionalBt;
     private GridLayout mAddtionalItems;
-    private ToggleButton mDetectBt;
+    private ImageButton mAutoBt;
     private ToggleButton mWideShotBt;
     private ToggleButton mTimerBt;
 
@@ -71,11 +88,11 @@ public class BebopActivity extends AppCompatActivity {
     private ByteBuffer mPpsBuffer;
     private int mNbMaxDownload;
     private int mCurrentDownloadIndex;
-    private boolean isDetect = false;
+    private boolean isDetect = true;
     private boolean isFollow = false;
     private boolean isSmile = false;
     private int mynum = 0;
-
+    private ImageButton mManualBt;
     // variable for timer
     private boolean isTimerMode = false;
     private ToggleButton followBtn;
@@ -94,6 +111,159 @@ public class BebopActivity extends AppCompatActivity {
 
     private  boolean isAdditional = false;
 
+
+
+    private Bitmap mbitmap;
+    private Bitmap mbitmap2;
+    private File imgFile;
+    private File list1;
+    private String path;
+    private String datapath = "";
+    private TessBaseAPI mTess;
+    private String[] imgList;
+    private Mat img_input = new Mat();
+    private Mat img_output = new Mat();
+
+    public native void car_plate(long a1,long a2);
+    static{
+        System.loadLibrary("native-lib");
+        //System.loadLibrary("tess");
+    }
+
+    public boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isExternalStorageReadable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+            return true;
+        }
+        return false;
+    }
+
+    private void copyFiles() {
+        try{
+            String filepath = datapath + "/tessdata/kor.traineddata";
+            AssetManager assetManager = getAssets();
+            InputStream instream = assetManager.open("tessdata/kor.traineddata");
+            OutputStream outstream = new FileOutputStream(filepath);
+            byte[] buffer = new byte[1024];
+            int read;
+            while ((read = instream.read(buffer)) != -1) {
+                outstream.write(buffer, 0, read);
+            }
+            outstream.flush();
+            outstream.close();
+            instream.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //check file on the device
+    private void checkFile(File dir) {
+        //디렉토리가 없으면 디렉토리를 만들고 그후에 파일을 카피
+        if(!dir.exists()&& dir.mkdirs()) {
+            copyFiles();
+        }
+        //디렉토리가 있지만 파일이 없으면 파일카피 진행
+        if(dir.exists()) {
+            String datafilepath = datapath+ "/tessdata/kor.traineddata";
+            File datafile = new File(datafilepath);
+            if(!datafile.exists()) {
+                copyFiles();
+            }
+        }
+    }
+
+    private void findpath() {
+        path = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator
+                + "ARSDKMedias" + File.separator;
+        if(!isExternalStorageReadable()){
+            //Toast.makeText(getApplicationContext(),"Can't Access",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        list1 = new File(path);
+        imgList = list1.list(new FilenameFilter() {
+            public boolean accept(File dir, String filename) {
+                boolean bOK = false;
+                if(filename.toLowerCase().endsWith(".jpg")) bOK = true;
+                //if(bOK) Toast.makeText(getApplicationContext(),"file name : " + filename + " is true",Toast.LENGTH_LONG).show();
+                return bOK;
+            }
+        });
+        if(imgList != null){
+            //path + imgList[0];
+            imgFile = new File(path + imgList[0]);
+            //uri = Uri.parse(path + imgList[0]);
+            //Toast.makeText(getApplicationContext(),"path : " + path + imgList[0],Toast.LENGTH_LONG).show();
+            //mImageView.setImageURI(uri);
+        }
+        else{
+            //Toast.makeText(getApplicationContext(),"imgList is empty",Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private Bitmap imgRotate(Bitmap bmp){
+        int width = bmp.getWidth();
+        int height = bmp.getHeight();
+
+        Matrix matrix = new Matrix();
+        matrix.postRotate(270);
+
+        Bitmap resizedBitmap = Bitmap.createBitmap(bmp, 0, 0, width, height, matrix, true);
+        bmp.recycle();
+
+        return resizedBitmap;
+    }
+
+    private void process() {
+        findpath();
+        if(imgFile.exists()){
+            mbitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+            mbitmap = imgRotate(mbitmap);
+            mbitmap = Bitmap.createBitmap(mbitmap,1024,825,2048,1500);
+        }
+
+        if (mbitmap != null) {
+            Utils.bitmapToMat(mbitmap, img_input);
+
+            car_plate(img_input.getNativeObjAddr(), img_output.getNativeObjAddr());
+
+            mbitmap2 = Bitmap.createBitmap(img_output.cols(), img_output.rows(), Bitmap.Config.ARGB_8888);
+            //Log.i("imgoutput는 아무 죄가 없다 : " ,img_output.dump());
+
+            Utils.matToBitmap(img_output, mbitmap2);
+
+            //mbitmap2
+            datapath = getFilesDir() + "/tesseract/";
+
+            checkFile(new File(datapath + "tessdata/"));
+            String lang = "kor";
+
+            mTess = new TessBaseAPI();
+            mTess.init(datapath, lang);
+
+            String OCRresult = null;
+            mTess.setImage(mbitmap2);
+            OCRresult = mTess.getUTF8Text();
+
+            Toast.makeText(getApplicationContext(),OCRresult,Toast.LENGTH_LONG).show();
+        }
+    }
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,6 +275,15 @@ public class BebopActivity extends AppCompatActivity {
         ARDiscoveryDeviceService service = intent.getParcelableExtra(DeviceListActivity.EXTRA_DEVICE_SERVICE);
         mBebopDrone = new BebopDrone(this, service);
         mBebopDrone.addListener(mBebopListener);
+
+        mManualBt = (ImageButton) findViewById(R.id.btn_result);
+        mManualBt.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                Intent intent = new Intent(BebopActivity.this, ManualActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
     }
 
@@ -162,8 +341,8 @@ public class BebopActivity extends AppCompatActivity {
                 @Override
                 public void onFinish() {
                     timer.setText(""+ (--nowTime));
-                    takePicture();
-                    //download();
+                    //takePicture();
+                    download();
 
                     seekBar.setProgress(1);
                 }
@@ -192,6 +371,16 @@ public class BebopActivity extends AppCompatActivity {
         mDownloadProgressDialog.show();
     }
 
+    private void turn180() {
+        mBebopDrone.setYaw((byte) -100);
+        try {
+            Thread.sleep(5500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        mBebopDrone.setYaw((byte) 0);
+    }
+
     private void initIHM() {
         mVideoView = (BebopVideoView) findViewById(R.id.videoView);
         mVideoView.setSurfaceTextureListener(mVideoView);
@@ -204,55 +393,55 @@ public class BebopActivity extends AppCompatActivity {
         mBatteryIndicator = (TextView) findViewById(R.id.battery_indicator);
 
         //followBtn = (ToggleButton)findViewById(R.id.followBtn);
-        followBtn.setEnabled(false);
-        followBtn.setVisibility(View.INVISIBLE);
+//        followBtn.setEnabled(false);
+//        followBtn.setVisibility(View.INVISIBLE);
 
 
         //timer = (TextView) findViewById(R.id.TimerText);
-        timer.setEnabled(false);
-        timer.setVisibility(View.INVISIBLE);
+//        timer.setEnabled(false);
+//        timer.setVisibility(View.INVISIBLE);
 
         //seekBar = (SeekBar)findViewById(R.id.seekBar);
-        seekBar.setEnabled(false);
-        seekBar.setVisibility(View.INVISIBLE);
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
+//        seekBar.setEnabled(false);
+//        seekBar.setVisibility(View.INVISIBLE);
+//        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+//            public void onStopTrackingTouch(SeekBar seekBar) {
+//            }
+//
+//            public void onStartTrackingTouch(SeekBar seekBar) {
+//            }
+//
+//            public void onProgressChanged(SeekBar seekBar, int progress,
+//                                          boolean fromUser) {
+//                timer.setText("" + progress);
+//            }
+//        });
 
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
+//        //startBtn = (ImageButton)findViewById(R.id.startBtn);
+//        startBtn.setEnabled(false);
+//        startBtn.setVisibility(View.INVISIBLE);
+//        startBtn.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View v) {
+//                timerStart();
+//            }
+//        });
 
-            public void onProgressChanged(SeekBar seekBar, int progress,
-                                          boolean fromUser) {
-                timer.setText("" + progress);
-            }
-        });
+//        //wideStart = (ImageButton)findViewById(R.id.wideStartBtn);
+//        wideStart.setEnabled(false);
+//        wideStart.setVisibility(View.INVISIBLE);
+//        wideStart.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View v) {
+//                Toast toast = Toast.makeText(getApplicationContext(), "WideShot Start", Toast.LENGTH_LONG);
+//                toast.show();
+//                mWideShot.resume(mBebopDrone, beep, beepFinish);
+//            }
+//        });
 
-        //startBtn = (ImageButton)findViewById(R.id.startBtn);
-        startBtn.setEnabled(false);
-        startBtn.setVisibility(View.INVISIBLE);
-        startBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                timerStart();
-            }
-        });
-
-        //wideStart = (ImageButton)findViewById(R.id.wideStartBtn);
-        wideStart.setEnabled(false);
-        wideStart.setVisibility(View.INVISIBLE);
-        wideStart.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                Toast toast = Toast.makeText(getApplicationContext(), "WideShot Start", Toast.LENGTH_LONG);
-                toast.show();
-                mWideShot.resume(mBebopDrone, beep, beepFinish);
-            }
-        });
-
-        //smileBtn = (ToggleButton)findViewById(R.id.smileBtn);
-        smileBtn.setEnabled(false);
-        smileBtn.setVisibility(View.INVISIBLE);
+//        //smileBtn = (ToggleButton)findViewById(R.id.smileBtn);
+//        smileBtn.setEnabled(false);
+//        smileBtn.setVisibility(View.INVISIBLE);
 
 
         beep = new Beeper(this, R.raw.beep_repeat2);
@@ -275,110 +464,124 @@ public class BebopActivity extends AppCompatActivity {
         });
 
 //        mAddtionalItems = (GridLayout)findViewById(R.id.additionalMenuItems);
-        mAddtionalItems.setEnabled(false);
-        mAddtionalItems.setVisibility(View.INVISIBLE);
+//        mAddtionalItems.setEnabled(false);
+//        mAddtionalItems.setVisibility(View.INVISIBLE);
 
 
-        mDetectBt = (ToggleButton)findViewById(R.id.Detect);
-        mDetectBt = (ToggleButton)findViewById(R.id.Detect);
-        mDetectBt.setOnClickListener(new View.OnClickListener(){
+        mAutoBt = (ImageButton)findViewById(R.id.automove);
+        mAutoBt.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 if(isDetect) {
                     isDetect = false;
                     mynum = 0;
-                    final Timer timer = new Timer(true);
-                    TimerTask t1 = new TimerTask() {
+
+                    final Handler mHandler = new Handler();
+                    final Handler H2 = new Handler();
+                    mHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            mBebopDrone.setPitch((byte) 0);
-                            mBebopDrone.setFlag((byte) 0);
                             mynum++;
-                            if(mynum == 3) {
-                                timer.cancel();
+                            takePicture();
+                            H2.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mBebopDrone.setPitch((byte) 0);
+                                    mBebopDrone.setFlag((byte) 0);
+                                    process();
+                                }
+                            }, 3000);
+
+                            mBebopDrone.setPitch((byte) 20);
+                            mBebopDrone.setFlag((byte) 1);
+                            download();
+
+                            if(mynum == 4) {
                                 mBebopDrone.setPitch((byte) 0);
                                 mBebopDrone.setFlag((byte) 0);
-                                return;
+                                turn180();
+                                mBebopDrone.setPitch((byte) 20);
+                                mBebopDrone.setFlag((byte) 1);
+                                try {
+                                    Thread.sleep(5000);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                mBebopDrone.setPitch((byte) 0);
+                                mBebopDrone.setFlag((byte) 0);
+                                mHandler.removeCallbacks(this);
                             }
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
+                            else {
+                                mHandler.postDelayed(this, 7000);
                             }
-                            mBebopDrone.setPitch((byte) 50);
-                            mBebopDrone.setFlag((byte) 1);
                         }
-                        @Override
-                        public boolean cancel() {
-                            return super.cancel();
-                        }
-                    };
-                    timer.schedule(t1, 0, 3000);
+                    }, 7000);
+
                 }
                 else {
                     isDetect = true;
-                    mDetectBt.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_detect_on));
+                    //mAutoBt.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_detect_on));
                     mBebopDrone.setPitch((byte) 0);
                     mBebopDrone.setFlag((byte) 0);
                 }
             }
         });
 
-        mWideShotBt = (ToggleButton)findViewById(R.id.WideShot);
-        mWideShotBt.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-                if(isWide){
-                    isWide = false;
-                    wideStart.setVisibility(View.INVISIBLE);
-                    wideStart.setEnabled(false);
-                    mWideShotBt.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_wideshot_off));
-                }else{
-                    isWide = true;
-                    wideStart.setVisibility(View.VISIBLE);
-                    wideStart.setEnabled(true);
-                    mWideShotBt.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_wideshot_on));
-                }
-            }
-        });
-        mTimerBt = (ToggleButton)findViewById(R.id.Timer);
-        mTimerBt.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-                if(isTimerMode){
-                    isTimerMode = false;
-                    startBtn.setVisibility(View.INVISIBLE);
-                    startBtn.setEnabled(false);
-                    timer.setVisibility(View.INVISIBLE);
-                    timer.setEnabled(false);
-                    seekBar.setVisibility(View.INVISIBLE);
-                    seekBar.setEnabled(false);
-                    mTimerBt.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_timer_off));
-                }else{
-                    isTimerMode = true;
-                    startBtn.setVisibility(View.VISIBLE);
-                    startBtn.setEnabled(true);
-                    timer.setVisibility(View.VISIBLE);
-                    timer.setEnabled(true);
-                    seekBar.setVisibility(View.VISIBLE);
-                    seekBar.setEnabled(true);
-                    mTimerBt.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_timer_on));
-                }
-            }
-        });
+//        mWideShotBt = (ToggleButton)findViewById(R.id.WideShot);
+//        mWideShotBt.setOnClickListener(new View.OnClickListener(){
+//            public void onClick(View v){
+//                if(isWide){
+//                    isWide = false;
+//                    wideStart.setVisibility(View.INVISIBLE);
+//                    wideStart.setEnabled(false);
+//                    mWideShotBt.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_wideshot_off));
+//                }else{
+//                    isWide = true;
+//                    wideStart.setVisibility(View.VISIBLE);
+//                    wideStart.setEnabled(true);
+//                    mWideShotBt.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_wideshot_on));
+//                }
+//            }
+//        });
+//        mTimerBt = (ToggleButton)findViewById(R.id.Timer);
+//        mTimerBt.setOnClickListener(new View.OnClickListener(){
+//            public void onClick(View v){
+//                if(isTimerMode){
+//                    isTimerMode = false;
+//                    startBtn.setVisibility(View.INVISIBLE);
+//                    startBtn.setEnabled(false);
+//                    timer.setVisibility(View.INVISIBLE);
+//                    timer.setEnabled(false);
+//                    seekBar.setVisibility(View.INVISIBLE);
+//                    seekBar.setEnabled(false);
+//                    mTimerBt.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_timer_off));
+//                }else{
+//                    isTimerMode = true;
+//                    startBtn.setVisibility(View.VISIBLE);
+//                    startBtn.setEnabled(true);
+//                    timer.setVisibility(View.VISIBLE);
+//                    timer.setEnabled(true);
+//                    seekBar.setVisibility(View.VISIBLE);
+//                    seekBar.setEnabled(true);
+//                    mTimerBt.setBackgroundDrawable(getResources().getDrawable(R.drawable.if_timer_on));
+//                }
+//            }
+//        });
 
-        mAdditionalBt = (ImageButton)findViewById(R.id.additionalMenu);
-        mAdditionalBt.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-                if(isAdditional){
-                    isAdditional = false;
-                    mAddtionalItems.setEnabled(false);
-                    mAddtionalItems.setVisibility(View.INVISIBLE);
-                }else{
-                    isAdditional = true;
-                    mAddtionalItems.setEnabled(true);
-                    mAddtionalItems.setVisibility(View.VISIBLE);
-                }
-
-            }
-        });
+       // mAdditionalBt = (ImageButton)findViewById(R.id.additionalMenu);
+//        mAdditionalBt.setOnClickListener(new View.OnClickListener(){
+//            public void onClick(View v){
+//                if(isAdditional){
+//                    isAdditional = false;
+//                    mAddtionalItems.setEnabled(false);
+//                    mAddtionalItems.setVisibility(View.INVISIBLE);
+//                }else{
+//                    isAdditional = true;
+//                    mAddtionalItems.setEnabled(true);
+//                    mAddtionalItems.setVisibility(View.VISIBLE);
+//                }
+//
+//            }
+//        });
 
         mTakeOffLandBt = (ImageButton) findViewById(R.id.btn_takeoff_land);
         mTakeOffLandBt.setOnClickListener(new View.OnClickListener() {
@@ -646,7 +849,7 @@ public class BebopActivity extends AppCompatActivity {
 
         @Override
         public void onBatteryChargeChanged(int batteryPercentage) {
-            mBatteryIndicator.setText(batteryPercentage);
+            mBatteryIndicator.setText(Integer.toString(batteryPercentage));
 
         }
 

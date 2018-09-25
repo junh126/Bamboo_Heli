@@ -20,15 +20,14 @@
         >
     </ListView>
 
-    <!--<TextView-->
-        <!--android:id="@+id/isEmpty"-->
-        <!--android:layout_width="350dp"-->
-        <!--android:layout_height="175dp"-->
-        <!--android:text="can't connect"-->
-        <!--android:textSize="50dp"-->
-        <!--android:src="@drawable/ic_empty_device_list"-->
-        <!--android:layout_centerVertical="true"-->
-        <!--android:layout_centerHorizontal="true" />-->
+    <ImageView
+        android:id="@+id/isEmpty"
+        android:layout_width="350dp"
+        android:layout_height="175dp"
+
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+    <!--android:src="@drawable/ic_empty_device_list"-->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -39,15 +38,26 @@
         android:textStyle="bold"
         />
 
-    <!--<TextView-->
-        <!--android:id="@+id/isConnect"-->
-        <!--android:layout_width="300dp"-->
-        <!--android:layout_height="150dp"-->
-        <!--android:text="connectable"-->
-        <!--android:textSize="50dp"-->
-        <!--android:src="@drawable/ic_connect_device_list"-->
-        <!--android:layout_centerHorizontal="true"-->
-        <!--android:layout_marginTop="82dp" />-->
+    <ImageView
+        android:id="@+id/isConnect"
+        android:layout_width="300dp"
+        android:layout_height="150dp"
+
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="82dp" />
+
+    <!--android:src="@drawable/ic_connect_device_list" -->
+
+    <!--<Button-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Manual"-->
+        <!--android:textSize="30sp"-->
+        <!--android:textColor="#17375c"-->
+        <!--android:background="@android:color/transparent"-->
+        <!--android:id="@+id/Manual"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_alignParentRight="true"/>-->
 
 
 </RelativeLayout>
