@@ -21,6 +21,10 @@
             android:name=".activity.DeviceListActivity"
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme.NoActionBar.Fullscreen" />
+        <activity android:name=".activity.CompActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/AppTheme.NoActionBar.Fullscreen"
+            ></activity>
         <activity
             android:name=".activity.IntroActivity"
             android:theme="@style/AppTheme.NoActionBar.Fullscreen">
@@ -33,7 +37,7 @@
         <activity
             android:name=".activity.ManualActivity"
             android:screenOrientation="landscape"
-            android:theme="@style/AppTheme.NoActionBar.Fullscreen"></activity>
+            android:theme="@style/AppTheme.NoActionBar.Fullscreen" />
 
     </application>
 

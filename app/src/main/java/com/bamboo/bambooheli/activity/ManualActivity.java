@@ -22,13 +22,19 @@ import com.googlecode.tesseract.android.TessBaseAPI;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.util.HashSet;
 
 public class ManualActivity extends AppCompatActivity {
     public boolean isExternalStorageWritable() {
@@ -71,20 +77,67 @@ public class ManualActivity extends AppCompatActivity {
     private File imgFile;
     private Bitmap mbitmap2;
     private Button button1;
+    private HashSet<String> tmp_set;
     private Button next_button;
     private Mat img_input;
     private Mat img_output;
     private Uri uri;
     private TessBaseAPI mTess;
     private String[] imgList;
+    private String copy_path;
+    private File copy_File;
     private int count1;
     String datapath = "";
     String path;
+    private String txt_path;
+    File txt_File;
+    public String ReadTextFile(String path1){
+        StringBuffer strBuffer = new StringBuffer();
+        try{
+            InputStream is = new FileInputStream(path1);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            String line="";
+            while((line=reader.readLine())!=null){
+                strBuffer.append(line+"\n");
+            }
+
+            reader.close();
+            is.close();
+        }catch (IOException e){
+            e.printStackTrace();
+            return "";
+        }
+        return strBuffer.toString();
+    }
+    public void WriteTextFile(String foldername, String filename, String contents){
+        try{
+            File dir = new File (foldername);
+            //디렉토리 폴더가 없으면 생성함
+            if(!dir.exists()){
+                dir.mkdir();
+            }
+            //파일 output stream 생성
+            FileOutputStream fos = new FileOutputStream(foldername+"/"+filename, true);
+            //파일쓰기
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fos));
+            writer.write(contents);
+            writer.flush();
+
+            writer.close();
+            fos.close();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manual);
+
+        tmp_set = new HashSet<String>();
 
         count1 = 0;
 
@@ -93,30 +146,41 @@ public class ManualActivity extends AppCompatActivity {
         //Path 찾는 작업
         path = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator
                 + "ARSDKMedias" + File.separator;
+        txt_path = path + "result.txt";
+        //txt_File = new File(txt_path);
         //Toast.makeText(getApplicationContext(),"Accessing",Toast.LENGTH_SHORT).show();
         if(!isExternalStorageReadable()){
             Toast.makeText(getApplicationContext(),"Can't Access",Toast.LENGTH_SHORT).show();
             return;
         }
-        File list1 = new File(path);
-        imgList = list1.list(new FilenameFilter() {
-            public boolean accept(File dir, String filename) {
-                boolean bOK = false;
-                if(filename.toLowerCase().endsWith(".jpg")) bOK = true;
-                //if(bOK) Toast.makeText(getApplicationContext(),"file name : " + filename + " is true",Toast.LENGTH_LONG).show();
-                return bOK;
+        try{
+            File list1 = new File(path);
+            imgList = list1.list(new FilenameFilter() {
+                public boolean accept(File dir, String filename) {
+                    boolean bOK = false;
+                    if(filename.toLowerCase().endsWith(".jpg")) bOK = true;
+                    //if(bOK) Toast.makeText(getApplicationContext(),"file name : " + filename + " is true",Toast.LENGTH_LONG).show();
+                    return bOK;
+                }
+            });
+            if(imgList != null){
+                //path + imgList[0];
+                imgFile = new File(path + imgList[0]);
+                //uri = Uri.parse(path + imgList[0]);
+                Toast.makeText(getApplicationContext(),"path : " + path + imgList[0],Toast.LENGTH_LONG).show();
+                //mImageView.setImageURI(uri);
             }
-        });
-        if(imgList != null){
-            //path + imgList[0];
-            imgFile = new File(path + imgList[0]);
-            //uri = Uri.parse(path + imgList[0]);
-            Toast.makeText(getApplicationContext(),"path : " + path + imgList[0],Toast.LENGTH_LONG).show();
-            //mImageView.setImageURI(uri);
+            else{
+                Toast.makeText(getApplicationContext(),"imgList is empty",Toast.LENGTH_LONG).show();
+            }
         }
-        else{
-            Toast.makeText(getApplicationContext(),"imgList is empty",Toast.LENGTH_LONG).show();
+        catch (ArrayIndexOutOfBoundsException e){
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(),"Invalid path",Toast.LENGTH_LONG).show();
         }
+
+
+
 
 
         img_input = new Mat();
@@ -125,13 +189,19 @@ public class ManualActivity extends AppCompatActivity {
         //mdrawable = (BitmapDrawable) getResources().getDrawable(R.drawable.test2);
 
 
+        try{
+            if(imgFile.exists()){
+                mbitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                mbitmap = imgRotate(mbitmap);
+                mbitmap = Bitmap.createBitmap(mbitmap,1024,825,2048,1500);
 
-        if(imgFile.exists()){
-            mbitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-            mbitmap = imgRotate(mbitmap);
-            mbitmap = Bitmap.createBitmap(mbitmap,1024,825,2048,1500);
+                mImageView.setImageBitmap(mbitmap);
+            }
 
-            mImageView.setImageBitmap(mbitmap);
+        }
+        catch (NullPointerException e){
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(),"Invalid path",Toast.LENGTH_LONG).show();
         }
 
         next_button = (Button) findViewById(R.id.next_button);
@@ -165,6 +235,9 @@ public class ManualActivity extends AppCompatActivity {
         button1.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View view) {
+//                copy_path = path + "After" + File.separator;
+//                copy_File = new File(copy_path + 1 +".jpg");
+//                imgFile.renameTo(copy_File);
                 if (mbitmap != null) {
                     Utils.bitmapToMat(mbitmap, img_input);
                     Log.i("ㅇㅇ2" ,"2번");
@@ -190,8 +263,8 @@ public class ManualActivity extends AppCompatActivity {
                     mTess.init(datapath, lang);
 
                     String temp = null;
-                    String OCRresult = "invalid car number";
-                    String Carnum = "invalid car number";
+                    String OCRresult = "invalid number";
+
                     mTess.setImage(mbitmap2);
                     temp = mTess.getUTF8Text();
                     char[] c = temp.toCharArray();
@@ -203,16 +276,72 @@ public class ManualActivity extends AppCompatActivity {
                                     (c[i+3] >= 48) && (c[i+3] <= 57 )  )
                             {
                                 char[] tmp1 = {c[i],c[i+1],c[i+2],c[i+3]};
-                                char[] tmp2 = {c[i],c[i+1],c[i+2],c[i+3]};
                                 OCRresult = new String(tmp1);
-                                Carnum = new String(tmp2);
                                 break;
                             }
                         }
                     }
                     //button1.setText("ascii 48~ 57 : " + 48 +" " + 49 +" " + 50 +" " + 51 +" " + 52);
-                    button1.setText("temp : " + temp + "\r\n" + "char[] c.length " + String.valueOf(c.length) + "\r\n" +
-                            "OCRresult : "+ OCRresult + "\r\n" + "carnum : " + Carnum);
+//                    button1.setText("temp : " + temp + "\r\n" + "char[] c.length " + String.valueOf(c.length) + "\r\n" +
+//                            "OCRresult : "+ OCRresult + "\r\n" + "carnum : " + Carnum);
+                    if(!OCRresult.equals("invalid number")){
+                        WriteTextFile(path,"result.txt", OCRresult + " ");
+                        Toast.makeText(getApplicationContext(),"result.txt에 쓰는 중",Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        //WriteTextFile(path,"result.txt", OCRresult + " ");
+                        Toast.makeText(getApplicationContext(),"검출되지 않음",Toast.LENGTH_SHORT).show();
+                    }
+
+                    //result.txt에서 번호 가져오기
+                    String read = ReadTextFile(txt_path);
+
+                    char[] CC = read.toCharArray();
+                    try{
+                        if(CC!=null){
+                            for(int i =0;i<CC.length ; i++){
+                                if(i % 5 == 0 && (i + 3 <= CC.length -1)
+                                        && (CC[i] >= 48) && (CC[i] <= 57 )
+                                        && (CC[i+1] >= 48) && (CC[i+1] <= 57 )
+                                        && (CC[i+2] >= 48) && (CC[i+2] <= 57 )
+                                        && (CC[i+3] >= 48) && (CC[i+3] <= 57 )){
+
+                                    char[] ee3 = {CC[i],CC[i+1],CC[i+2],CC[i+3]};
+                                    String tmp3 = new String(ee3);
+                                    //Toast.makeText(getApplicationContext(),"tmp3 : " + tmp3,Toast.LENGTH_SHORT).show();
+                                    tmp_set.add(tmp3);
+
+                                }
+                            }
+                        }
+                    }
+                    catch(ArrayIndexOutOfBoundsException e){
+                        e.printStackTrace();
+                        Toast.makeText(getApplicationContext(),"ArrayIndexOutOfBoundsException!!",Toast.LENGTH_SHORT).show();
+                    }
+                    catch (NullPointerException e){
+                        e.printStackTrace();
+                        //Toast.makeText(getApplicationContext(),"NullPointerException!!",Toast.LENGTH_SHORT).show();
+                    }
+                    try{
+                        String ERER = "";
+                        if(!tmp_set.isEmpty()){
+                            for(String item: tmp_set){
+                                ERER += item + " ";
+                            }
+
+                            //WriteTextFile(path,"result.txt", ERER);
+                        }
+                    }
+                    catch (NullPointerException e){
+                        e.printStackTrace();
+                        //Toast.makeText(getApplicationContext(),"NullPointerException222222",Toast.LENGTH_SHORT).show();
+                    }
+
+
+                }
+                else{
+                    button1.setText("No image");
                 }
             }
         });

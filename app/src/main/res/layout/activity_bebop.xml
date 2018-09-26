@@ -169,6 +169,13 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
+    <ToggleButton
+        android:id="@+id/toggleButton"
+        android:layout_width="49dp"
+        android:layout_height="40dp"
+        android:layout_alignTop="@+id/takePictureBt"
+        android:layout_toLeftOf="@+id/takePictureBt"
+        android:text="222" />
     <!--<ImageButton-->
         <!--android:layout_width="44dp"-->
         <!--android:layout_height="40dp"-->
@@ -326,6 +333,23 @@
         android:layout_alignParentRight="true"
 
         />
+
+    <Button
+        android:id="@+id/savebutton"
+        android:layout_width="75dp"
+        android:layout_height="45dp"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf ="@+id/automove"
+        android:text="save" />
+
+    <Button
+        android:id="@+id/compbutton"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/automove"
+        android:layout_alignLeft="@+id/btn_result"
+        android:text="auto_Compare"
+        android:textSize="8sp" />
 
 
 </RelativeLayout>
