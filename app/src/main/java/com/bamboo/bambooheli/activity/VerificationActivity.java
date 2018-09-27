@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -76,9 +78,9 @@ public class VerificationActivity extends AppCompatActivity {
     private Bitmap mbitmap;
     private File imgFile;
     private Bitmap mbitmap2;
-    private Button button1;
+    private ImageButton button1;
     private HashSet<String> tmp_set;
-    private Button next_button;
+    private ImageButton next_button;
     private Mat img_input;
     private Mat img_output;
     private Uri uri;
@@ -204,7 +206,7 @@ public class VerificationActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(),"Invalid path",Toast.LENGTH_LONG).show();
         }
 
-        next_button = (Button) findViewById(R.id.next_button);
+        next_button = (ImageButton) findViewById(R.id.next_button);
         next_button.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -231,7 +233,7 @@ public class VerificationActivity extends AppCompatActivity {
             }
         });
 
-        button1 = (Button)findViewById(R.id.button1);
+        button1 = (ImageButton)findViewById(R.id.button1);
         button1.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -341,7 +343,7 @@ public class VerificationActivity extends AppCompatActivity {
 
                 }
                 else{
-                    button1.setText("No image");
+                    //button1.setText("No image");
                 }
             }
         });

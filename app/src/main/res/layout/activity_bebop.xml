@@ -166,7 +166,7 @@
         android:layout_height="40dp"
         android:layout_alignTop="@+id/takePictureBt"
         android:layout_toLeftOf="@+id/takePictureBt"
-        android:text="222" />
+        android:background="@drawable/ic_toggle_black_24dp" />
     <!--<ImageButton-->
         <!--android:layout_width="44dp"-->
         <!--android:layout_height="40dp"-->
@@ -325,22 +325,26 @@
 
         />
 
-    <Button
+    <ImageButton
         android:id="@+id/savebutton"
-        android:layout_width="75dp"
-        android:layout_height="45dp"
+        android:layout_width="90dp"
+        android:layout_height="48dp"
         android:layout_alignParentBottom="true"
         android:layout_toRightOf ="@+id/automove"
-        android:text="save" />
+        android:text="save"
+        android:background="@drawable/save"
+        />
 
-    <Button
+    <ImageButton
         android:id="@+id/compbutton"
         android:layout_width="100dp"
-        android:layout_height="wrap_content"
+        android:layout_height="45dp"
         android:layout_above="@+id/automove"
         android:layout_alignLeft="@+id/btn_result"
         android:text="auto_Compare"
-        android:textSize="8sp" />
+        android:textSize="8sp"
+        android:background="@drawable/compare"
+        />
 
 
 </RelativeLayout>

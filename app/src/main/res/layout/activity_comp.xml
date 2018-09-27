@@ -5,7 +5,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.CompActivity">
+    tools:context=".activity.CompActivity"
+    android:background="#000000"
+    >
 
 
     <TextView
@@ -14,14 +16,17 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:text="result_1.txt" />
+        android:text="result_1.txt"
+        android:textColor="#FFFFFF"
+        />
 
-    <Button
+    <ImageButton
         android:id="@+id/testbutton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:background="@drawable/compare_white"
         android:text="test" />
 
     <TextView
@@ -30,7 +35,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/result1_textView"
-        android:text="result_2.txt" />
+        android:text="result_2.txt"
+        android:textColor="#FFFFFF"
+        />
 
     <TextView
         android:id="@+id/result_textView"
@@ -38,6 +45,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/result2_textView"
-        android:text="TextView" />
+        android:text="TextView"
+        android:textColor="#FFFFFF"
+        />
 
 </RelativeLayout>

@@ -165,7 +165,7 @@ Java_com_bamboo_bambooheli_activity_Carplate_car_1plate(JNIEnv *env, jobject ins
 }
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_bamboo_bambooheli_activity_ManualActivity_car_1plate(JNIEnv *env, jobject instance,
+Java_com_bamboo_bambooheli_activity_VerificationActivity_car_1plate(JNIEnv *env, jobject instance,
                                                               jlong addrinput, jlong addroutput) {
 
     Mat  image2, image3, drawing;  //  Make images.

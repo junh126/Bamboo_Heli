@@ -84,7 +84,7 @@ public class BebopActivity extends AppCompatActivity {
 
     private TextView mBatteryIndicator;
 
-    private Button mCompBtn;
+    private ImageButton mCompBtn;
     private ByteBuffer mSpsBuffer;
     private ByteBuffer mPpsBuffer;
     private int mNbMaxDownload;
@@ -102,7 +102,7 @@ public class BebopActivity extends AppCompatActivity {
     private Beeper beep;
     private Beeper beepFinish;
 
-    private Button mSaveBtn;
+    private ImageButton mSaveBtn;
 
     private boolean isToggle = false;
     private  boolean isAdditional = false;
@@ -468,7 +468,7 @@ public class BebopActivity extends AppCompatActivity {
         mVideoView = (BebopVideoView) findViewById(R.id.videoView);
         mVideoView.setSurfaceTextureListener(mVideoView);
 
-        mCompBtn = (Button) findViewById(R.id.compbutton);
+        mCompBtn = (ImageButton) findViewById(R.id.compbutton);
         mCompBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
@@ -481,7 +481,7 @@ public class BebopActivity extends AppCompatActivity {
 
 
 
-        mSaveBtn = (Button)findViewById(R.id.savebutton);
+        mSaveBtn = (ImageButton)findViewById(R.id.savebutton);
         mSaveBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
@@ -539,9 +539,11 @@ public class BebopActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(mtoggleBtn.isChecked()){
+                    mtoggleBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_toggle_on_black_24dp));
                     isToggle = true;
                 }
                 else{
+                    mtoggleBtn.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_toggle_black_24dp));
                     isToggle = false;
                 }
             }

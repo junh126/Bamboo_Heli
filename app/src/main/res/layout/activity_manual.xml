@@ -15,22 +15,26 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="33dp" />
 
-    <Button
+    <ImageButton
         android:id="@+id/button1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_marginBottom="25dp"
         android:layout_marginRight="37dp"
-        android:text="Button" />
+        android:text="Button"
+        android:background="@drawable/result"
+        />
 
-    <Button
+    <ImageButton
         android:id="@+id/next_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
         android:layout_alignParentLeft="true"
         android:layout_alignTop="@+id/button1"
-        android:text="Next" />
+        android:text="Next"
+        android:background="@drawable/next"
+        />
 
 </RelativeLayout>

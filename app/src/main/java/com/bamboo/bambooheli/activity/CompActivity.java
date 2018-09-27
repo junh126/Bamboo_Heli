@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,7 +26,7 @@ public class CompActivity extends AppCompatActivity {
     private TextView mResult1_textView;
     private TextView mResult2_textView;
     private TextView mResult_textView;
-    private Button mBtn;
+    private ImageButton mBtn;
     private String path;
     private String strResult_2;
     private String strResult_1;
@@ -138,7 +139,7 @@ public class CompActivity extends AppCompatActivity {
         mResult1_textView.setText(text1);
         mResult2_textView.setText(text2);
 
-        mBtn = (Button)findViewById(R.id.testbutton);
+        mBtn = (ImageButton)findViewById(R.id.testbutton);
         mBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
