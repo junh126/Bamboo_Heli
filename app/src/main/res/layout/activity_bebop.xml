@@ -11,10 +11,7 @@
         android:id="@+id/videoView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
-    <com.bamboo.bambooheli.view.FaceDetect
-        android:id="@+id/faceDetect"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+
 
     <ImageView
         android:layout_width="match_parent"
@@ -65,13 +62,7 @@
             <!--android:id="@+id/Detect"-->
             <!--android:textOff=" "-->
             <!--android:textOn=" "/>-->
-        <!--<ToggleButton-->
-            <!--android:layout_width="75dp"-->
-            <!--android:layout_height="45dp"-->
-            <!--android:background="@drawable/if_wideshot_off"-->
-            <!--android:id="@+id/WideShot"-->
-            <!--android:textOff=" "-->
-            <!--android:textOn=" "/>-->
+
         <!--<ToggleButton-->
             <!--android:layout_width="45dp"-->
             <!--android:layout_height="45dp"-->

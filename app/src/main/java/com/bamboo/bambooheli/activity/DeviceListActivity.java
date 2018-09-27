@@ -104,7 +104,7 @@ public class DeviceListActivity extends AppCompatActivity {
 //        mManualBt = (Button)findViewById(R.id.Manual);
 //        mManualBt.setOnClickListener(new View.OnClickListener(){
 //            public void onClick(View v){
-//                Intent intent = new Intent(DeviceListActivity.this, ManualActivity.class);
+//                Intent intent = new Intent(DeviceListActivity.this, VerificationActivity.class);
 //                startActivity(intent);
 //            }
 //        });

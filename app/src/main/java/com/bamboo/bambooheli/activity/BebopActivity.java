@@ -1,7 +1,6 @@
 package com.bamboo.bambooheli.activity;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.AssetManager;
@@ -12,12 +11,8 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ContextThemeWrapper;
-import android.support.v7.widget.PopupMenu;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -41,8 +36,7 @@ import com.bamboo.bambooheli.R;
 import com.bamboo.bambooheli.drone.BebopDrone;
 import com.bamboo.bambooheli.drone.Beeper;
 import com.bamboo.bambooheli.view.BebopVideoView;
-import com.bamboo.bambooheli.view.FaceDetect;
-import com.bamboo.bambooheli.view.WideShot;
+
 
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
@@ -61,8 +55,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.ByteBuffer;
 import java.util.HashSet;
-import java.util.Timer;
-import java.util.TimerTask;
 
 
 public class BebopActivity extends AppCompatActivity {
@@ -78,7 +70,7 @@ public class BebopActivity extends AppCompatActivity {
     private ProgressDialog mDownloadProgressDialog;
 
     private BebopVideoView mVideoView;
-    private FaceDetect mFaceDetect;
+
     private ImageView mImageView;
 
     private ImageButton mTakeOffLandBt;
@@ -99,14 +91,10 @@ public class BebopActivity extends AppCompatActivity {
     private HashSet<String> Plate_set;
     private int mCurrentDownloadIndex;
     private boolean isDetect = true;
-    private boolean isFollow = false;
-    private boolean isSmile = false;
     private int mynum = 0;
     private ImageButton mManualBt;
     // variable for timer
     private boolean isTimerMode = false;
-    private ToggleButton followBtn;
-    private ToggleButton smileBtn;
     private ImageButton startBtn;
     private TextView timer;
     private SeekBar seekBar;
@@ -117,10 +105,6 @@ public class BebopActivity extends AppCompatActivity {
     private Button mSaveBtn;
 
     private boolean isToggle = false;
-    private boolean isWide = false;
-    private WideShot mWideShot;
-    private ImageButton wideStart;
-
     private  boolean isAdditional = false;
 
 
@@ -378,7 +362,7 @@ public class BebopActivity extends AppCompatActivity {
         mManualBt = (ImageButton) findViewById(R.id.btn_result);
         mManualBt.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                Intent intent = new Intent(BebopActivity.this, ManualActivity.class);
+                Intent intent = new Intent(BebopActivity.this, VerificationActivity.class);
                 startActivity(intent);
             }
         });
@@ -493,10 +477,9 @@ public class BebopActivity extends AppCompatActivity {
 
             }
         });
-        mFaceDetect = (FaceDetect)findViewById(R.id.faceDetect);
         mImageView = (ImageView)findViewById(R.id.imageView);
 
-        mWideShot = new WideShot();
+
 
         mSaveBtn = (Button)findViewById(R.id.savebutton);
         mSaveBtn.setOnClickListener(new View.OnClickListener(){
