@@ -106,7 +106,7 @@ public class BebopActivity extends AppCompatActivity {
 
     private boolean isToggle = false;
     private  boolean isAdditional = false;
-
+    private boolean flag = false;
 
     private ToggleButton mtoggleBtn;
     private Bitmap mbitmap;
@@ -256,7 +256,7 @@ public class BebopActivity extends AppCompatActivity {
         }
         catch (ArrayIndexOutOfBoundsException e){
             e.printStackTrace();
-            Toast.makeText(getApplicationContext(),"Invalid path",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),"Invalid path111111111",Toast.LENGTH_LONG).show();
         }
 
     }
@@ -288,54 +288,66 @@ public class BebopActivity extends AppCompatActivity {
         }
         catch (NullPointerException e){
             e.printStackTrace();
-            Toast.makeText(getApplicationContext(),"Invalid path",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),"Invalid path2222222",Toast.LENGTH_LONG).show();
         }
+        try{
+            if (mbitmap != null) {
+                Utils.bitmapToMat(mbitmap, img_input);
 
-        if (mbitmap != null) {
-            Utils.bitmapToMat(mbitmap, img_input);
+                car_plate(img_input.getNativeObjAddr(), img_output.getNativeObjAddr());
 
-            car_plate(img_input.getNativeObjAddr(), img_output.getNativeObjAddr());
+                mbitmap2 = Bitmap.createBitmap(img_output.cols(), img_output.rows(), Bitmap.Config.ARGB_8888);
+                //Log.i("imgoutput는 아무 죄가 없다 : " ,img_output.dump());
 
-            mbitmap2 = Bitmap.createBitmap(img_output.cols(), img_output.rows(), Bitmap.Config.ARGB_8888);
-            //Log.i("imgoutput는 아무 죄가 없다 : " ,img_output.dump());
+                Utils.matToBitmap(img_output, mbitmap2);
 
-            Utils.matToBitmap(img_output, mbitmap2);
+                //mbitmap2
+                datapath = getFilesDir() + "/tesseract/";
 
-            //mbitmap2
-            datapath = getFilesDir() + "/tesseract/";
+                checkFile(new File(datapath + "tessdata/"));
+                String lang = "kor";
 
-            checkFile(new File(datapath + "tessdata/"));
-            String lang = "kor";
+                mTess = new TessBaseAPI();
+                mTess.init(datapath, lang);
 
-            mTess = new TessBaseAPI();
-            mTess.init(datapath, lang);
-
-            String OCRresult = null;
-            String temp = "Invalid number";
-            mTess.setImage(mbitmap2);
-            temp = mTess.getUTF8Text();
-            char[] c = temp.toCharArray();
-            if(c != null){
-                for(int i = 0;i <= c.length - 4 ; i++){
-                    if( (c[i] >= 48) && (c[i] <= 57 ) &&
-                            (c[i+1] >= 48) && (c[i+1] <= 57 ) &&
-                            (c[i+2] >= 48) && (c[i+2] <= 57 ) &&
-                            (c[i+3] >= 48) && (c[i+3] <= 57 )  )
-                    {
-                        char[] tmp1 = {c[i],c[i+1],c[i+2],c[i+3]};
-                        OCRresult = new String(tmp1);
-                        break;
+                String OCRresult = "Invalid number";
+                String temp = "Invalid number";
+                mTess.setImage(mbitmap2);
+                temp = mTess.getUTF8Text();
+                char[] c = temp.toCharArray();
+                if(c != null){
+                    for(int i = 0;i <= c.length - 4 ; i++){
+                        if( (c[i] >= 48) && (c[i] <= 57 ) &&
+                                (c[i+1] >= 48) && (c[i+1] <= 57 ) &&
+                                (c[i+2] >= 48) && (c[i+2] <= 57 ) &&
+                                (c[i+3] >= 48) && (c[i+3] <= 57 )  )
+                        {
+                            char[] tmp1 = {c[i],c[i+1],c[i+2],c[i+3]};
+                            OCRresult = new String(tmp1);
+                            break;
+                        }
                     }
                 }
+                if(!OCRresult.equals("Invalid number") ){
+                    Plate_set.add(OCRresult);
+                    Toast.makeText(getApplicationContext(),"Plate num : " + OCRresult,Toast.LENGTH_SHORT).show();
+                }
+                else if(OCRresult.equals("8379")){
+                    Plate_set.add(OCRresult);
+                    flag = true;//turn 180
+                    Toast.makeText(getApplicationContext(),"Plate num : " + OCRresult,Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    //검출안됨
+                    Toast.makeText(getApplicationContext(),"Invalid Number",Toast.LENGTH_SHORT).show();
+                }
             }
-            if(!OCRresult.equals("Invalid number") ){
-                Plate_set.add(OCRresult);
-                Toast.makeText(getApplicationContext(),"Plate num : " + OCRresult,Toast.LENGTH_SHORT).show();
-            }
-            else{
-                //검출안됨
-                Toast.makeText(getApplicationContext(),"Invalid Number",Toast.LENGTH_SHORT).show();
-            }
+        }catch (NullPointerException e){
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(),"Null pointer exception55",Toast.LENGTH_SHORT).show();
+        }catch(ArrayIndexOutOfBoundsException e) {
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(), "ArrayIndexOutOfBoundsException!55", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -607,15 +619,15 @@ public class BebopActivity extends AppCompatActivity {
                                 }
                             }, 3000);
 
-                            mBebopDrone.setPitch((byte) 20);
+                            mBebopDrone.setPitch((byte) 30);
                             mBebopDrone.setFlag((byte) 1);
                             download();
 
-                            if(mynum == 4) {
+                            if(mynum == 4 || flag) {
                                 mBebopDrone.setPitch((byte) 0);
                                 mBebopDrone.setFlag((byte) 0);
                                 turn180();
-                                mBebopDrone.setPitch((byte) 20);
+                                mBebopDrone.setPitch((byte) 30);
                                 mBebopDrone.setFlag((byte) 1);
                                 try {
                                     Thread.sleep(5000);
