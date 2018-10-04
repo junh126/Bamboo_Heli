@@ -17,9 +17,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/imageView"/>
-        <!--android:layout_below="@+id/seekBar"-->
-        <!--android:layout_alignRight="@+id/followBtn"-->
-        <!--android:layout_alignEnd="@+id/followBtn" -->
 
 
 
@@ -36,102 +33,6 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
-    <!--<ToggleButton-->
-        <!--android:layout_width="65dp"-->
-        <!--android:layout_height="55dp"-->
-        <!--android:layout_marginRight="5sp"-->
-        <!--android:background="@drawable/if_follow_off"-->
-        <!--android:textOff=" "-->
-        <!--android:textOn=" "-->
-        <!--android:id="@+id/followBtn"-->
-        <!--android:layout_alignParentBottom="true"-->
-        <!--android:layout_alignParentRight="true"-->
-        <!--android:layout_alignParentEnd="true" />-->
-    <!--<GridLayout-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_alignParentBottom="true"-->
-        <!--android:id="@+id/additionalMenuItems"-->
-        <!--android:layout_marginLeft="10dp"-->
-        <!--android:layout_toRightOf="@+id/additionalMenu"-->
-        <!--android:layout_toEndOf="@+id/additionalMenu">-->
-        <!--<ToggleButton-->
-            <!--android:layout_width="45dp"-->
-            <!--android:layout_height="45dp"-->
-            <!--android:background="@drawable/if_detect_off"-->
-            <!--android:id="@+id/Detect"-->
-            <!--android:textOff=" "-->
-            <!--android:textOn=" "/>-->
-
-        <!--<ToggleButton-->
-            <!--android:layout_width="45dp"-->
-            <!--android:layout_height="45dp"-->
-            <!--android:background="@drawable/if_timer_off"-->
-            <!--android:id="@+id/Timer"-->
-            <!--android:textOff=" "-->
-            <!--android:textOn=" "/>-->
-    <!--</GridLayout>-->
-    <!--<ToggleButton-->
-        <!--android:layout_width="40dp"-->
-        <!--android:layout_height="30dp"-->
-        <!--android:layout_marginRight="5sp"-->
-        <!--android:background="@drawable/if_smile_off"-->
-        <!--android:textOff=" "-->
-        <!--android:textOn=" "-->
-        <!--android:id="@+id/smileBtn"-->
-        <!--android:layout_above="@+id/followBtn"-->
-        <!--android:layout_alignParentRight="true"-->
-        <!--android:layout_alignParentEnd="true" />-->
-
-    <!--<ImageButton-->
-        <!--android:layout_width="32dp"-->
-        <!--android:layout_height="39dp"-->
-        <!--android:padding="0sp"-->
-        <!--android:scaleType="centerCrop"-->
-        <!--android:background="@android:color/transparent"-->
-        <!--app:srcCompat="@drawable/if_stopwatch"-->
-        <!--android:id="@+id/startBtn"-->
-        <!--android:layout_alignTop="@+id/takePictureBt"-->
-        <!--android:layout_toLeftOf="@+id/takePictureBt"-->
-        <!--android:layout_toStartOf="@+id/takePictureBt"-->
-        <!--android:layout_marginRight="11dp"-->
-        <!--android:layout_marginEnd="11dp" />-->
-
-    <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="3"-->
-        <!--android:textSize="30sp"-->
-        <!--android:id="@+id/TimerText"-->
-        <!--android:textColor="#FFFFFF"-->
-        <!--android:inputType="number"-->
-        <!--android:layout_above="@+id/seekBar"-->
-        <!--android:layout_marginRight="11dp"-->
-        <!--android:layout_toLeftOf="@+id/startBtn"-->
-        <!--android:layout_toStartOf="@+id/startBtn" />-->
-
-    <!--<SeekBar-->
-        <!--android:id="@+id/seekBar"-->
-        <!--android:layout_width="100dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:progress="3"-->
-        <!--android:max="10"-->
-        <!--android:layout_below="@+id/startBtn"-->
-        <!--android:layout_alignRight="@+id/startBtn"-->
-        <!--android:layout_alignEnd="@+id/startBtn" />-->
-
-    <!--<ImageButton-->
-        <!--android:layout_width="34dp"-->
-        <!--android:layout_height="35dp"-->
-        <!--android:layout_marginTop="5sp"-->
-        <!--android:scaleType="centerCrop"-->
-        <!--android:background="@android:color/transparent"-->
-        <!--app:srcCompat="@drawable/if_emergency"-->
-        <!--android:id="@+id/emergencyBt"-->
-        <!--android:width="150dp"-->
-        <!--android:layout_alignParentTop="true"-->
-        <!--android:layout_toRightOf="@+id/battery_indicator"-->
-        <!--android:layout_toEndOf="@+id/battery_indicator" />-->
 
     <ImageButton
         android:layout_width="44dp"
@@ -167,29 +68,6 @@
         android:layout_alignTop="@+id/takePictureBt"
         android:layout_toLeftOf="@+id/takePictureBt"
         android:background="@drawable/ic_toggle_black_24dp" />
-    <!--<ImageButton-->
-        <!--android:layout_width="44dp"-->
-        <!--android:layout_height="40dp"-->
-        <!--android:scaleType="centerCrop"-->
-        <!--android:background="@android:color/transparent"-->
-        <!--app:srcCompat="@drawable/if_widestart"-->
-        <!--android:id="@+id/wideStartBtn"-->
-        <!--android:layout_alignTop="@+id/imageView"-->
-        <!--android:layout_alignParentRight="true"-->
-        <!--android:layout_alignParentEnd="true" />-->
-
-
-    <!--<ImageView-->
-    <!--android:id="@+id/battery_indicator"-->
-    <!--android:layout_width="34dp"-->
-    <!--android:layout_height="35dp"-->
-    <!--android:layout_marginTop="5sp"-->
-    <!--android:contentDescription="@string/battery_level_indicator"-->
-    <!--android:tint="@android:color/white"-->
-    <!--app:srcCompat="@drawable/battery_state_list"-->
-    <!--android:layout_alignParentTop="true"-->
-    <!--android:layout_alignParentLeft="true"-->
-    <!--android:layout_alignParentStart="true" />-->
     <TextView
         android:id="@+id/battery_indicator"
         android:layout_width="wrap_content"

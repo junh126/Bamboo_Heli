@@ -83,7 +83,7 @@ public class BebopActivity extends AppCompatActivity {
     private ImageButton mDownloadBt;
 
     private TextView mBatteryIndicator;
-
+    private int re;
     private ImageButton mCompBtn;
     private ByteBuffer mSpsBuffer;
     private ByteBuffer mPpsBuffer;
@@ -107,7 +107,7 @@ public class BebopActivity extends AppCompatActivity {
     private boolean isToggle = false;
     private  boolean isAdditional = false;
     private boolean flag = false;
-
+    private int a = 0;
     private ToggleButton mtoggleBtn;
     private Bitmap mbitmap;
     private Bitmap mbitmap2;
@@ -256,7 +256,7 @@ public class BebopActivity extends AppCompatActivity {
         }
         catch (ArrayIndexOutOfBoundsException e){
             e.printStackTrace();
-            Toast.makeText(getApplicationContext(),"Invalid path111111111",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),"검출된 번호판이 없습니다",Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -288,7 +288,7 @@ public class BebopActivity extends AppCompatActivity {
         }
         catch (NullPointerException e){
             e.printStackTrace();
-            Toast.makeText(getApplicationContext(),"Invalid path2222222",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),"auto move를 시작합니다",Toast.LENGTH_LONG).show();
         }
         try{
             if (mbitmap != null) {
@@ -328,26 +328,26 @@ public class BebopActivity extends AppCompatActivity {
                         }
                     }
                 }
-                if(!OCRresult.equals("Invalid number") ){
-                    Plate_set.add(OCRresult);
-                    Toast.makeText(getApplicationContext(),"Plate num : " + OCRresult,Toast.LENGTH_SHORT).show();
-                }
-                else if(OCRresult.equals("8379")){
+                if(OCRresult.equals("2626")){
                     Plate_set.add(OCRresult);
                     flag = true;//turn 180
+                    Toast.makeText(getApplicationContext(),"마커 인식 : 1 2626 ==> turn 180" + OCRresult,Toast.LENGTH_SHORT).show();
+                }
+                else if(!OCRresult.equals("Invalid number") ){
+                    Plate_set.add(OCRresult);
                     Toast.makeText(getApplicationContext(),"Plate num : " + OCRresult,Toast.LENGTH_SHORT).show();
                 }
                 else{
                     //검출안됨
-                    Toast.makeText(getApplicationContext(),"Invalid Number",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"유효하지 않은 번호판",Toast.LENGTH_SHORT).show();
                 }
             }
         }catch (NullPointerException e){
             e.printStackTrace();
-            Toast.makeText(getApplicationContext(),"Null pointer exception55",Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(),"Null pointer exception55",Toast.LENGTH_SHORT).show();
         }catch(ArrayIndexOutOfBoundsException e) {
             e.printStackTrace();
-            Toast.makeText(getApplicationContext(), "ArrayIndexOutOfBoundsException!55", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), "ArrayIndexOutOfBoundsException!55", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -469,7 +469,7 @@ public class BebopActivity extends AppCompatActivity {
     private void turn180() {
         mBebopDrone.setYaw((byte) -100);
         try {
-            Thread.sleep(5500);
+            Thread.sleep(6000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -512,7 +512,7 @@ public class BebopActivity extends AppCompatActivity {
                             Plate_set = new HashSet<String>();
                         }
                         else{
-                            Toast.makeText(getApplicationContext(),"Plate_set is empty",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(),"비행 중 검출된 번호판이 없습니다.",Toast.LENGTH_SHORT).show();
                         }
                     }
                     catch (NullPointerException e){
@@ -534,7 +534,7 @@ public class BebopActivity extends AppCompatActivity {
                             Plate_set = new HashSet<String>();
                         }
                         else{
-                            Toast.makeText(getApplicationContext(),"Plate_set is empty",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(),"비행 중 검출된 번호판이 없습니다.",Toast.LENGTH_SHORT).show();
                         }
                     }
                     catch (NullPointerException e){
@@ -583,17 +583,22 @@ public class BebopActivity extends AppCompatActivity {
                 if(isDetect) {
                     isDetect = false;
                     mynum = 0;
-
+                    re = 0;
                     final Handler mHandler = new Handler();
                     final Handler H2 = new Handler();
+                    final Handler H3 = new Handler();
                     mHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             mynum++;
                             takePicture();
+                            // 앞부분에 출발
+//                            mBebopDrone.setPitch((byte) 50);
+//                            mBebopDrone.setFlag((byte) 1);
                             H2.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
+                                    // 3.5초 후 정지
                                     mBebopDrone.setPitch((byte) 0);
                                     mBebopDrone.setFlag((byte) 0);
                                     process();
@@ -613,36 +618,54 @@ public class BebopActivity extends AppCompatActivity {
                                     }
                                     catch (NullPointerException e){
                                         e.printStackTrace();
-                                        Toast.makeText(getApplicationContext(),"No image",Toast.LENGTH_LONG).show();
+                                        //Toast.makeText(getApplicationContext(),"No image",Toast.LENGTH_LONG).show();
                                     }
 
                                 }
-                            }, 3000);
+                            }, 4000);
 
-                            mBebopDrone.setPitch((byte) 30);
+                            mBebopDrone.setPitch((byte) 40);
                             mBebopDrone.setFlag((byte) 1);
                             download();
 
-                            if(mynum == 4 || flag) {
+//                            // 1초 후 다음 과정 ( 1초 딜레이 다운로드 )
+//                            H3.postDelayed(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    mBebopDrone.setPitch((byte) 0);
+//                                    mBebopDrone.setFlag((byte) 0);
+//                                }
+//                            }, 500);
+
+                            if(mynum == 10 || flag) {
+                                flag = false;
+                                re = mynum;
                                 mBebopDrone.setPitch((byte) 0);
                                 mBebopDrone.setFlag((byte) 0);
                                 turn180();
-                                mBebopDrone.setPitch((byte) 30);
-                                mBebopDrone.setFlag((byte) 1);
-                                try {
-                                    Thread.sleep(5000);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
+
+//                                mBebopDrone.setPitch((byte) 30);
+//                                mBebopDrone.setFlag((byte) 1);
+//                                try {
+//                                    Thread.sleep(5000);
+//                                } catch (InterruptedException e) {
+//                                    e.printStackTrace();
+//                                }
+                                mBebopDrone.setPitch((byte) 0);
+                                mBebopDrone.setFlag((byte) 0);
+//                                mHandler.removeCallbacks(this);
+                                mHandler.postDelayed(this, 10000);
+                            }
+                            else if(mynum == 20 || mynum == re*2) {
                                 mBebopDrone.setPitch((byte) 0);
                                 mBebopDrone.setFlag((byte) 0);
                                 mHandler.removeCallbacks(this);
                             }
                             else {
-                                mHandler.postDelayed(this, 7000);
+                                mHandler.postDelayed(this, 10000);
                             }
                         }
-                    }, 7000);
+                    }, 10000);
 
                 }
                 else {
@@ -673,6 +696,7 @@ public class BebopActivity extends AppCompatActivity {
         findViewById(R.id.takePictureBt).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 takePicture();
+
             }
         });
 

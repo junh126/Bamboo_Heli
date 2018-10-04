@@ -91,6 +91,7 @@ public class VerificationActivity extends AppCompatActivity {
     private int count1;
     String datapath = "";
     String path;
+    private int a =0;
     private String txt_path;
     File txt_File;
     public String ReadTextFile(String path1){
@@ -149,6 +150,7 @@ public class VerificationActivity extends AppCompatActivity {
         path = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator
                 + "ARSDKMedias" + File.separator;
         txt_path = path + "result.txt";
+
         //txt_File = new File(txt_path);
         //Toast.makeText(getApplicationContext(),"Accessing",Toast.LENGTH_SHORT).show();
         if(!isExternalStorageReadable()){
@@ -237,6 +239,7 @@ public class VerificationActivity extends AppCompatActivity {
         button1.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View view) {
+                a++;
 //                copy_path = path + "After" + File.separator;
 //                copy_File = new File(copy_path + 1 +".jpg");
 //                imgFile.renameTo(copy_File);
@@ -286,9 +289,10 @@ public class VerificationActivity extends AppCompatActivity {
                     //button1.setText("ascii 48~ 57 : " + 48 +" " + 49 +" " + 50 +" " + 51 +" " + 52);
 //                    button1.setText("temp : " + temp + "\r\n" + "char[] c.length " + String.valueOf(c.length) + "\r\n" +
 //                            "OCRresult : "+ OCRresult + "\r\n" + "carnum : " + Carnum);
+
                     if(!OCRresult.equals("invalid number")){
                         WriteTextFile(path,"result.txt", OCRresult + " ");
-                        Toast.makeText(getApplicationContext(),"result.txt에 쓰는 중",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),"차량 번호 : " + OCRresult,Toast.LENGTH_SHORT).show();
                     }
                     else{
                         //WriteTextFile(path,"result.txt", OCRresult + " ");

@@ -120,6 +120,8 @@ public class CompActivity extends AppCompatActivity {
         } catch (NullPointerException e){
             e.printStackTrace();
         }
+
+
         String text1 = "result_1.txt에서 검출된 차량 번호 : " + "\n";
         if(!tmp_set1.isEmpty()){
             for(String item : tmp_set1){
